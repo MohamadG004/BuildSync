@@ -1,4 +1,4 @@
-# HyStats — Hypixel Player Statistics Tracker
+# HyTrack - Hypixel Player Statistics Tracker
 
 A premium, full-stack Next.js application for tracking Hypixel Minecraft server player statistics. Built with a **cyber-noir gaming terminal** aesthetic.
 
@@ -111,7 +111,3 @@ The Hypixel API has rate limits. The app handles them gracefully with:
 - Server-side caching (60 seconds per player)
 - User-friendly error messages
 - Retry functionality
-
-## 📄 License
-
-MIT
