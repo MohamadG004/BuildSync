@@ -1,0 +1,179 @@
+@import "tailwindcss";
+
+/* ─── Custom CSS Variables ─── */
+:root {
+  --cyan: #00ffd0;
+  --cyan-dim: #00bfa5;
+  --purple: #a855f7;
+  --purple-dim: #7c3aed;
+  --amber: #f59e0b;
+  --red: #ef4444;
+  --void: #050810;
+  --surface: #0d1117;
+  --surface-2: #161b27;
+  --surface-3: #1e2535;
+  --border: rgba(0, 255, 208, 0.12);
+  --border-hover: rgba(0, 255, 208, 0.3);
+  --text-muted: #6b7280;
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-mono: var(--font-mono);
+}
+
+/* ─── Base ─── */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--void);
+  color: white;
+  font-family: var(--font-body), system-ui, sans-serif;
+}
+
+/* ─── Tailwind Utilities ─── */
+@layer utilities {
+  .font-display { font-family: var(--font-display), sans-serif; }
+  .font-body { font-family: var(--font-body), sans-serif; }
+  .font-mono { font-family: var(--font-mono), monospace; }
+  .bg-void { background-color: var(--void); }
+  .bg-surface { background-color: var(--surface); }
+  .bg-surface-2 { background-color: var(--surface-2); }
+  .bg-surface-3 { background-color: var(--surface-3); }
+  .text-cyan { color: var(--cyan); }
+  .text-cyan-dim { color: var(--cyan-dim); }
+  .text-purple { color: var(--purple); }
+  .border-cyan { border-color: var(--border); }
+  .border-cyan-hover:hover { border-color: var(--border-hover); }
+}
+
+/* ─── Grid Overlay Background ─── */
+.grid-overlay {
+  background-image:
+    linear-gradient(rgba(0, 255, 208, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 208, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ─── Ambient Blobs ─── */
+.blob-1 {
+  background: radial-gradient(circle, #00ffd0 0%, transparent 70%);
+  filter: blur(60px);
+}
+.blob-2 {
+  background: radial-gradient(circle, #a855f7 0%, transparent 70%);
+  filter: blur(80px);
+}
+.blob-3 {
+  background: radial-gradient(circle, #7c3aed 0%, transparent 70%);
+  filter: blur(100px);
+}
+
+/* ─── Glassmorphism Card ─── */
+.glass-card {
+  background: rgba(13, 17, 23, 0.7);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.glass-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 0 20px rgba(0, 255, 208, 0.05);
+}
+
+/* ─── Neon Glow ─── */
+.neon-cyan {
+  text-shadow: 0 0 10px rgba(0, 255, 208, 0.5), 0 0 20px rgba(0, 255, 208, 0.3);
+}
+.neon-purple {
+  text-shadow: 0 0 10px rgba(168, 85, 247, 0.5), 0 0 20px rgba(168, 85, 247, 0.3);
+}
+.neon-border {
+  box-shadow: 0 0 0 1px rgba(0, 255, 208, 0.2), 0 0 15px rgba(0, 255, 208, 0.1);
+}
+.neon-border-purple {
+  box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.3), 0 0 15px rgba(168, 85, 247, 0.1);
+}
+
+/* ─── Scanline Effect ─── */
+.scanlines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 208, 0.01) 2px,
+    rgba(0, 255, 208, 0.01) 4px
+  );
+  pointer-events: none;
+}
+
+/* ─── Progress Bar ─── */
+.progress-bar {
+  background: linear-gradient(90deg, var(--cyan), var(--purple));
+  box-shadow: 0 0 8px rgba(0, 255, 208, 0.4);
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 208, 0.2);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 208, 0.4);
+}
+
+/* ─── Rank Badge Colors ─── */
+.rank-mvp-plus { color: #00AAAA; }
+.rank-mvp { color: #00AAAA; }
+.rank-vip-plus { color: #55FF55; }
+.rank-vip { color: #55FF55; }
+.rank-youtuber { color: #FF0000; }
+.rank-admin { color: #FF5555; }
+.rank-non { color: #AAAAAA; }
+
+/* ─── Skeleton Loading ─── */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface-2) 0%,
+    var(--surface-3) 50%,
+    var(--surface-2) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+/* ─── Chart Customization ─── */
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background: var(--surface-2) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+}
+
+/* ─── Toast ─── */
+.toast-custom {
+  background: var(--surface-2) !important;
+  color: white !important;
+  border: 1px solid var(--border) !important;
+}
+
+/* ─── Font Family Definitions ─── */
+.font-display, [class*="font-display"] {
+  font-family: 'Orbitron', sans-serif;
+}
+.font-body, body {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+}
+.font-mono, [class*="font-mono"] {
+  font-family: 'JetBrains Mono', monospace;
+}
