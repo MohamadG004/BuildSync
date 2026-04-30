@@ -165,9 +165,9 @@ export function SkyWarsStatsComponent({ stats }: SkyWarsStatsProps) {
             { label: 'Ender Pearls', value: formatNumber(stats.enderpearls_thrown ?? 0), color: '#a78bfa' },
             { label: 'Mob Kills', value: formatNumber(stats.mob_kills ?? 0), color: '#fb923c' },
           ].map(item => (
-            <div key={item.label} className="rounded-xl bg-[rgba(255,255,255,0.03)] p-3 text-center">
+            <div key={item.label} className="rounded-xl bg-[var(--surface-2)] p-3 text-center">
               <p className="font-mono text-lg font-bold" style={{ color: item.color }}>{item.value}</p>
-              <p className="mt-0.5 text-xs text-gray-600">{item.label}</p>
+              <p className="mt-0.5 text-xs text-slate-500">{item.label}</p>
             </div>
           ))}
         </div>

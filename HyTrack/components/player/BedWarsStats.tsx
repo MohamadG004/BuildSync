@@ -205,13 +205,13 @@ export function BedWarsStatsComponent({ stats }: BedWarsStatsProps) {
           ].map(r => (
             <div
               key={r.label}
-              className="rounded-xl bg-[rgba(255,255,255,0.03)] p-3 text-center"
+              className="rounded-xl bg-[var(--surface-2)] p-3 text-center"
               style={{ border: `1px solid ${r.color}20` }}
             >
               <p className="font-mono text-lg font-bold" style={{ color: r.color }}>
                 {abbreviate(r.value ?? 0)}
               </p>
-              <p className="mt-0.5 text-xs text-gray-600">{r.label}</p>
+              <p className="mt-0.5 text-xs text-slate-500">{r.label}</p>
             </div>
           ))}
         </div>

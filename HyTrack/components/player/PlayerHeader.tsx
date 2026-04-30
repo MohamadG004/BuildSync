@@ -111,7 +111,7 @@ export function PlayerHeader({ player }: PlayerHeaderProps) {
           )}
 
           {/* Username */}
-          <h1 className="font-display text-3xl font-bold text-white sm:text-4xl">
+          <h1 className="font-display text-3xl font-bold text-slate-900 sm:text-4xl">
             {player.displayname}
           </h1>
 
@@ -124,7 +124,7 @@ export function PlayerHeader({ player }: PlayerHeaderProps) {
               ⭐ Level {player.level.level}
             </span>
             <div className="flex-1 max-w-[160px]">
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-[rgba(255,255,255,0.07)]">
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--surface-3)]">
                 <motion.div
                   className="progress-bar h-full rounded-full"
                   initial={{ width: 0 }}
@@ -133,7 +133,7 @@ export function PlayerHeader({ player }: PlayerHeaderProps) {
                 />
               </div>
             </div>
-            <span className="font-mono text-xs text-gray-600">
+            <span className="font-mono text-xs text-slate-500">
               {abbreviate(player.level.xp)} XP
             </span>
           </div>
@@ -174,27 +174,14 @@ export function PlayerHeader({ player }: PlayerHeaderProps) {
         <div className="flex gap-2 sm:flex-col sm:items-end">
           <button
             onClick={handleFavorite}
-            className="flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-all"
-            style={
-              favorited
-                ? {
-                    background: 'rgba(245, 158, 11, 0.1)',
-                    borderColor: 'rgba(245, 158, 11, 0.4)',
-                    color: 'var(--amber)',
-                  }
-                : {
-                    background: 'rgba(255,255,255,0.03)',
-                    borderColor: 'rgba(255,255,255,0.08)',
-                    color: '#9ca3af',
-                  }
-            }
+            className={favorited ? 'flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors bg-[var(--accent-soft)] border-[rgba(245,158,11,0.4)] text-[var(--amber)] hover:bg-[rgba(245,158,11,0.15)]' : 'flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-[var(--surface-2)]'}
           >
             {favorited ? <Star size={14} fill="currentColor" /> : <Heart size={14} />}
             {favorited ? 'Saved' : 'Save'}
           </button>
           <button
             onClick={handleShare}
-            className="flex items-center gap-2 rounded-lg border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] px-3 py-2 text-sm font-medium text-gray-400 transition-all hover:text-white"
+            className="flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-[var(--surface-2)]"
           >
             <Share2 size={14} />
             Share

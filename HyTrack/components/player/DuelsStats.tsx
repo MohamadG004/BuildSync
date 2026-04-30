@@ -74,14 +74,14 @@ export function DuelsStatsComponent({ stats }: { stats: DuelsStats }) {
             { label: 'Melee Accuracy', value: meleeAccuracy, hits: stats.melee_hits ?? 0, total: stats.melee_swings ?? 0, color: 'var(--cyan)' },
             { label: 'Bow Accuracy', value: bowAccuracy, hits: stats.bow_hits ?? 0, total: stats.bow_shots ?? 0, color: 'var(--amber)' },
           ].map(item => (
-            <div key={item.label} className="rounded-xl bg-[rgba(255,255,255,0.03)] p-4">
+            <div key={item.label} className="rounded-xl bg-[var(--surface-2)] p-4">
               <div className="flex justify-between mb-2">
-                <span className="text-sm text-gray-400">{item.label}</span>
+                <span className="text-sm text-slate-500">{item.label}</span>
                 <span className="font-mono text-sm font-bold" style={{ color: item.color }}>
                   {item.value}%
                 </span>
               </div>
-              <div className="h-2 rounded-full bg-[rgba(255,255,255,0.07)] overflow-hidden">
+              <div className="h-2 rounded-full bg-[var(--surface-3)] overflow-hidden">
                 <motion.div
                   className="h-full rounded-full"
                   style={{ background: item.color }}
@@ -90,7 +90,7 @@ export function DuelsStatsComponent({ stats }: { stats: DuelsStats }) {
                   transition={{ duration: 0.8, delay: 0.4 }}
                 />
               </div>
-              <p className="mt-1.5 text-xs text-gray-600">
+              <p className="mt-1.5 text-xs text-slate-500">
                 {formatNumber(item.hits)} / {formatNumber(item.total)}
               </p>
             </div>

@@ -178,7 +178,7 @@ export function OverallStats({ stats, level, karma, achievementPoints }: Overall
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-[rgba(255,255,255,0.04)]">
+            <tbody className="divide-y divide-[var(--border)]">
               {[
                 {
                   game: 'BedWars',
@@ -202,16 +202,16 @@ export function OverallStats({ stats, level, karma, achievementPoints }: Overall
                   color: 'var(--amber)',
                 },
               ].map(row => (
-                <tr key={row.game} className="group hover:bg-[rgba(255,255,255,0.02)]">
+                <tr key={row.game} className="group hover:bg-[var(--surface-2)]">
                   <td className="py-3 font-medium" style={{ color: row.color }}>
                     {row.game}
                   </td>
-                  <td className="py-3 font-mono text-white">{formatNumber(row.wins)}</td>
-                  <td className="py-3 font-mono text-gray-500">{formatNumber(row.losses)}</td>
+                  <td className="py-3 font-mono text-slate-900">{formatNumber(row.wins)}</td>
+                  <td className="py-3 font-mono text-slate-500">{formatNumber(row.losses)}</td>
                   <td className="py-3 font-mono" style={{ color: row.color }}>
                     {formatRatio(row.wins, row.losses)}
                   </td>
-                  <td className="py-3 font-mono text-gray-300">{abbreviate(row.kills)}</td>
+                  <td className="py-3 font-mono text-slate-500">{abbreviate(row.kills)}</td>
                 </tr>
               ))}
             </tbody>
