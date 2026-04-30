@@ -5,8 +5,8 @@ import { Providers } from '@/components/layout/Providers';
 
 export const metadata: Metadata = {
   title: {
-    default: 'HyStats — Hypixel Player Statistics',
-    template: '%s | HyStats',
+    default: 'HyTrack',
+    template: '%s | HyTrack',
   },
   description:
     'Track and analyze Hypixel player statistics for BedWars, SkyWars, and more. Real-time stats, charts, and player tracking.',
