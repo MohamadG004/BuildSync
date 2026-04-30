@@ -10,7 +10,6 @@ interface StatCardProps {
   subValue?: string;
   icon?: LucideIcon;
   iconColor?: string;
-  trend?: 'up' | 'down' | 'neutral';
   highlight?: boolean;
   className?: string;
   delay?: number;
@@ -21,57 +20,46 @@ export function StatCard({
   value,
   subValue,
   icon: Icon,
-  iconColor = 'var(--cyan)',
+  iconColor = 'var(--accent)',
   highlight = false,
   className,
   delay = 0,
 }: StatCardProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay }}
+      transition={{ duration: 0.35, delay }}
       className={cn(
-        'glass-card group relative overflow-hidden rounded-xl p-4 transition-all duration-200',
-        highlight && 'neon-border',
+        'group rounded-2xl border border-[var(--border)] bg-white p-4 shadow-sm transition hover:shadow-md',
+        highlight && 'border-[var(--accent)]',
         className
       )}
     >
-      {/* Background gradient on hover */}
-      <div
-        className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        style={{
-          background: `radial-gradient(circle at top left, ${iconColor}08 0%, transparent 60%)`,
-        }}
-      />
-
-      <div className="relative flex items-start justify-between">
-        <div className="flex-1 min-w-0">
-          <p className="text-xs font-medium uppercase tracking-widest text-gray-500 truncate">
+      <div className="flex items-start justify-between">
+        {/* Text */}
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-xs font-medium uppercase tracking-wide text-slate-500">
             {label}
           </p>
+
           <p
             className={cn(
-              'mt-1.5 font-mono text-2xl font-bold leading-none',
-              highlight ? 'neon-cyan' : 'text-white'
+              'mt-1.5 text-2xl font-semibold leading-none text-slate-900',
+              highlight && 'text-[var(--accent)]'
             )}
-            style={highlight ? { color: iconColor } : {}}
           >
             {value}
           </p>
+
           {subValue && (
-            <p className="mt-1 font-mono text-xs text-gray-500">{subValue}</p>
+            <p className="mt-1 text-xs text-slate-500">{subValue}</p>
           )}
         </div>
 
+        {/* Icon */}
         {Icon && (
-          <div
-            className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg"
-            style={{
-              background: `${iconColor}15`,
-              border: `1px solid ${iconColor}25`,
-            }}
-          >
+          <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--accent-soft)]">
             <Icon size={16} style={{ color: iconColor }} />
           </div>
         )}
@@ -80,20 +68,29 @@ export function StatCard({
   );
 }
 
-/* ─── Mini Stat (compact version) ─── */
+/* ─── Mini Stat ─── */
 interface MiniStatProps {
   label: string;
   value: string | number;
   color?: string;
 }
 
-export function MiniStat({ label, value, color = 'white' }: MiniStatProps) {
+export function MiniStat({
+  label,
+  value,
+  color = 'var(--accent)',
+}: MiniStatProps) {
   return (
     <div className="text-center">
-      <p className="font-mono text-lg font-bold leading-none" style={{ color }}>
+      <p
+        className="text-lg font-semibold leading-none"
+        style={{ color }}
+      >
         {value}
       </p>
-      <p className="mt-0.5 text-[10px] uppercase tracking-wider text-gray-600">{label}</p>
+      <p className="mt-0.5 text-[10px] uppercase tracking-wide text-slate-500">
+        {label}
+      </p>
     </div>
   );
 }
