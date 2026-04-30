@@ -2,19 +2,21 @@
 
 /* ─── Custom CSS Variables ─── */
 :root {
-  --cyan: #00ffd0;
-  --cyan-dim: #00bfa5;
-  --purple: #a855f7;
-  --purple-dim: #7c3aed;
-  --amber: #f59e0b;
-  --red: #ef4444;
-  --void: #050810;
-  --surface: #0d1117;
-  --surface-2: #161b27;
-  --surface-3: #1e2535;
-  --border: rgba(0, 255, 208, 0.12);
-  --border-hover: rgba(0, 255, 208, 0.3);
-  --text-muted: #6b7280;
+  --accent: #2563eb;
+  --accent-dim: #1d4ed8;
+  --accent-soft: rgba(37, 99, 235, 0.12);
+
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-2: #f1f5f9;
+  --surface-3: #e2e8f0;
+
+  --border: rgba(15, 23, 42, 0.08);
+  --border-hover: rgba(37, 99, 235, 0.22);
+
+  --text: #0f172a;
+  --text-muted: #64748b;
+
   --font-display: var(--font-display);
   --font-body: var(--font-body);
   --font-mono: var(--font-mono);
@@ -25,74 +27,103 @@
   box-sizing: border-box;
 }
 
+html {
+  background: var(--bg);
+}
+
 body {
-  background-color: var(--void);
-  color: white;
+  background-color: var(--bg);
+  color: var(--text);
   font-family: var(--font-body), system-ui, sans-serif;
 }
 
 /* ─── Tailwind Utilities ─── */
 @layer utilities {
-  .font-display { font-family: var(--font-display), sans-serif; }
-  .font-body { font-family: var(--font-body), sans-serif; }
-  .font-mono { font-family: var(--font-mono), monospace; }
-  .bg-void { background-color: var(--void); }
-  .bg-surface { background-color: var(--surface); }
-  .bg-surface-2 { background-color: var(--surface-2); }
-  .bg-surface-3 { background-color: var(--surface-3); }
-  .text-cyan { color: var(--cyan); }
-  .text-cyan-dim { color: var(--cyan-dim); }
-  .text-purple { color: var(--purple); }
-  .border-cyan { border-color: var(--border); }
-  .border-cyan-hover:hover { border-color: var(--border-hover); }
+  .font-display {
+    font-family: var(--font-display), sans-serif;
+  }
+  .font-body {
+    font-family: var(--font-body), sans-serif;
+  }
+  .font-mono {
+    font-family: var(--font-mono), monospace;
+  }
+
+  .bg-void {
+    background-color: var(--bg);
+  }
+  .bg-surface {
+    background-color: var(--surface);
+  }
+  .bg-surface-2 {
+    background-color: var(--surface-2);
+  }
+  .bg-surface-3 {
+    background-color: var(--surface-3);
+  }
+
+  .text-cyan {
+    color: var(--accent);
+  }
+  .text-cyan-dim {
+    color: var(--accent-dim);
+  }
+  .text-purple {
+    color: #475569;
+  }
+
+  .border-cyan {
+    border-color: var(--border);
+  }
+  .border-cyan-hover:hover {
+    border-color: var(--border-hover);
+  }
 }
 
-/* ─── Grid Overlay Background ─── */
+/* ─── Background Overlay ─── */
 .grid-overlay {
   background-image:
-    linear-gradient(rgba(0, 255, 208, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 255, 208, 0.03) 1px, transparent 1px);
+    linear-gradient(rgba(15, 23, 42, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 
 /* ─── Ambient Blobs ─── */
 .blob-1 {
-  background: radial-gradient(circle, #00ffd0 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.16) 0%, transparent 70%);
   filter: blur(60px);
 }
 .blob-2 {
-  background: radial-gradient(circle, #a855f7 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
   filter: blur(80px);
 }
 .blob-3 {
-  background: radial-gradient(circle, #7c3aed 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(148, 163, 184, 0.1) 0%, transparent 70%);
   filter: blur(100px);
 }
 
-/* ─── Glassmorphism Card ─── */
+/* ─── Card Surface ─── */
 .glass-card {
-  background: rgba(13, 17, 23, 0.7);
-  backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(14px);
   border: 1px solid var(--border);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .glass-card:hover {
   border-color: var(--border-hover);
-  box-shadow: 0 0 20px rgba(0, 255, 208, 0.05);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
 }
 
-/* ─── Neon Glow ─── */
-.neon-cyan {
-  text-shadow: 0 0 10px rgba(0, 255, 208, 0.5), 0 0 20px rgba(0, 255, 208, 0.3);
-}
+/* ─── Subtle Accent Text ─── */
+.neon-cyan,
 .neon-purple {
-  text-shadow: 0 0 10px rgba(168, 85, 247, 0.5), 0 0 20px rgba(168, 85, 247, 0.3);
+  text-shadow: none;
 }
-.neon-border {
-  box-shadow: 0 0 0 1px rgba(0, 255, 208, 0.2), 0 0 15px rgba(0, 255, 208, 0.1);
-}
+
+/* ─── Border Accent ─── */
+.neon-border,
 .neon-border-purple {
-  box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.3), 0 0 15px rgba(168, 85, 247, 0.1);
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.08);
 }
 
 /* ─── Scanline Effect ─── */
@@ -103,38 +134,42 @@ body {
   background: repeating-linear-gradient(
     0deg,
     transparent,
-    transparent 2px,
-    rgba(0, 255, 208, 0.01) 2px,
-    rgba(0, 255, 208, 0.01) 4px
+    transparent 3px,
+    rgba(15, 23, 42, 0.012) 3px,
+    rgba(15, 23, 42, 0.012) 6px
   );
   pointer-events: none;
 }
 
 /* ─── Progress Bar ─── */
 .progress-bar {
-  background: linear-gradient(90deg, var(--cyan), var(--purple));
-  box-shadow: 0 0 8px rgba(0, 255, 208, 0.4);
+  background: linear-gradient(90deg, var(--accent), #60a5fa);
+  box-shadow: 0 0 8px rgba(37, 99, 235, 0.18);
 }
 
 /* ─── Scrollbar ─── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 255, 208, 0.2);
+  background: rgba(37, 99, 235, 0.2);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 255, 208, 0.4);
+  background: rgba(37, 99, 235, 0.32);
 }
 
 /* ─── Rank Badge Colors ─── */
-.rank-mvp-plus { color: #00AAAA; }
-.rank-mvp { color: #00AAAA; }
-.rank-vip-plus { color: #55FF55; }
-.rank-vip { color: #55FF55; }
-.rank-youtuber { color: #FF0000; }
-.rank-admin { color: #FF5555; }
-.rank-non { color: #AAAAAA; }
+.rank-mvp-plus { color: #0f766e; }
+.rank-mvp { color: #0f766e; }
+.rank-vip-plus { color: #16a34a; }
+.rank-vip { color: #16a34a; }
+.rank-youtuber { color: #dc2626; }
+.rank-admin { color: #ef4444; }
+.rank-non { color: #64748b; }
 
 /* ─── Skeleton Loading ─── */
 @keyframes shimmer {
@@ -150,29 +185,31 @@ body {
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
-  border-radius: 4px;
+  border-radius: 8px;
 }
 
 /* ─── Chart Customization ─── */
 .recharts-tooltip-wrapper .recharts-default-tooltip {
-  background: var(--surface-2) !important;
+  background: var(--surface) !important;
   border: 1px solid var(--border) !important;
-  border-radius: 8px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08) !important;
 }
 
 /* ─── Toast ─── */
 .toast-custom {
-  background: var(--surface-2) !important;
-  color: white !important;
+  background: var(--surface) !important;
+  color: var(--text) !important;
   border: 1px solid var(--border) !important;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08) !important;
 }
 
 /* ─── Font Family Definitions ─── */
 .font-display, [class*="font-display"] {
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 .font-body, body {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 .font-mono, [class*="font-mono"] {
   font-family: 'JetBrains Mono', monospace;
