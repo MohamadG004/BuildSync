@@ -27,39 +27,38 @@ export function StatCard({
 }: StatCardProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay }}
+      transition={{ duration: 0.3, delay }}
       className={cn(
-        'group rounded-2xl border border-[var(--border)] bg-white p-4 shadow-sm transition hover:shadow-md',
-        highlight && 'border-[var(--accent)]',
+        'group rounded-2xl border bg-white p-4 transition-all hover:shadow-md',
+        highlight
+          ? 'border-[var(--accent-border)] shadow-[0_0_0_1px_var(--accent-soft)]'
+          : 'border-[var(--border)] shadow-sm',
         className
       )}
     >
-      <div className="flex items-start justify-between">
-        {/* Text */}
+      <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <p className="truncate text-xs font-medium uppercase tracking-wide text-slate-500">
+          <p className="truncate text-[11px] font-semibold uppercase tracking-wider text-slate-400">
             {label}
           </p>
-
-          <p
-            className={cn(
-              'mt-1.5 text-2xl font-semibold leading-none text-slate-900',
-              highlight && 'text-[var(--accent)]'
-            )}
-          >
+          <p className={cn(
+            'mt-2 text-2xl font-bold leading-none tracking-tight',
+            highlight ? 'text-[var(--accent)]' : 'text-slate-900'
+          )}>
             {value}
           </p>
-
           {subValue && (
-            <p className="mt-1 text-xs text-slate-500">{subValue}</p>
+            <p className="mt-1.5 text-xs text-slate-400">{subValue}</p>
           )}
         </div>
 
-        {/* Icon */}
         {Icon && (
-          <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--accent-soft)]">
+          <div
+            className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl"
+            style={{ background: `${iconColor}14` }}
+          >
             <Icon size={16} style={{ color: iconColor }} />
           </div>
         )}
@@ -68,27 +67,20 @@ export function StatCard({
   );
 }
 
-/* ─── Mini Stat ─── */
+/* ─── Mini Stat (used in PlayerHeader) ─── */
 interface MiniStatProps {
   label: string;
   value: string | number;
   color?: string;
 }
 
-export function MiniStat({
-  label,
-  value,
-  color = 'var(--accent)',
-}: MiniStatProps) {
+export function MiniStat({ label, value, color = 'var(--accent)' }: MiniStatProps) {
   return (
     <div className="text-center">
-      <p
-        className="text-lg font-semibold leading-none"
-        style={{ color }}
-      >
+      <p className="text-lg font-bold leading-none" style={{ color }}>
         {value}
       </p>
-      <p className="mt-0.5 text-[10px] uppercase tracking-wide text-slate-500">
+      <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
         {label}
       </p>
     </div>
