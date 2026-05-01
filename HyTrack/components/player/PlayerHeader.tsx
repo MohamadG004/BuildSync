@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Star, Heart, Calendar, Clock, Trophy, Zap, Share2 } from 'lucide-react';
+import { Star, Heart, Calendar, Clock, Share2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { formatNumber, formatDate, timeAgo, getAvatarUrl, abbreviate } from '@/lib/utils';
 import { useFavorites } from '@/hooks/useFavorites';
@@ -24,11 +24,7 @@ interface PlayerData {
   totalDailyRewards: number;
 }
 
-interface PlayerHeaderProps {
-  player: PlayerData;
-}
-
-export function PlayerHeader({ player }: PlayerHeaderProps) {
+export function PlayerHeader({ player }: { player: PlayerData }) {
   const { isFavorite, toggleFavorite } = useFavorites();
   const favorited = isFavorite(player.uuid);
 
@@ -42,39 +38,47 @@ export function PlayerHeader({ player }: PlayerHeaderProps) {
       addedAt: new Date().toISOString(),
     };
     const added = toggleFavorite(fav);
-    toast(added ? `${player.username} added to favorites!` : `${player.username} removed from favorites`, {
+    toast(added ? `${player.username} added to favorites!` : `${player.username} removed`, {
       icon: added ? '⭐' : '💔',
     });
   }
 
   function handleShare() {
     navigator.clipboard.writeText(window.location.href);
-    toast.success('Link copied to clipboard!');
+    toast.success('Link copied!');
   }
 
   const isNonRank = player.rank === 'NON';
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="glass-card relative overflow-hidden rounded-2xl p-6 sm:p-8"
+      transition={{ duration: 0.4 }}
+      className="relative overflow-hidden rounded-2xl border border-[var(--border)] bg-white p-6 shadow-sm sm:p-8"
     >
-      {/* Background glow based on rank */}
+      {/* Rank-coloured top accent strip */}
       <div
-        className="absolute -right-20 -top-20 h-60 w-60 rounded-full opacity-10 blur-3xl pointer-events-none"
-        style={{ background: player.rankColor }}
+        className="absolute inset-x-0 top-0 h-1 rounded-t-2xl opacity-70"
+        style={{ background: isNonRank ? 'var(--border-strong)' : player.rankColor }}
       />
 
-      <div className="relative flex flex-col gap-6 sm:flex-row sm:items-start">
+      {/* Subtle rank glow */}
+      {!isNonRank && (
+        <div
+          className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full opacity-[0.07] blur-3xl"
+          style={{ background: player.rankColor }}
+        />
+      )}
+
+      <div className="relative flex flex-col gap-5 sm:flex-row sm:items-start">
         {/* Avatar */}
         <div className="relative flex-shrink-0">
           <div
-            className="relative h-24 w-24 overflow-hidden rounded-2xl sm:h-32 sm:w-32"
+            className="relative h-24 w-24 overflow-hidden rounded-2xl sm:h-28 sm:w-28"
             style={{
-              border: `2px solid ${player.rankColor}50`,
-              boxShadow: `0 0 20px ${player.rankColor}20`,
+              border: `2px solid ${isNonRank ? 'var(--border-strong)' : player.rankColor + '50'}`,
+              boxShadow: isNonRank ? 'none' : `0 0 16px ${player.rankColor}20`,
             }}
           >
             <Image
@@ -85,103 +89,88 @@ export function PlayerHeader({ player }: PlayerHeaderProps) {
               unoptimized
             />
           </div>
-          {/* Online indicator */}
+          {/* Online indicator — uses bg-[var(--bg)] instead of broken var(--void) */}
           <div
-            className={`absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-[var(--void)] ${
-              player.online ? 'bg-green-400' : 'bg-gray-600'
+            className={`absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-white ${
+              player.online ? 'bg-green-400' : 'bg-slate-300'
             }`}
             title={player.online ? 'Online' : 'Offline'}
           />
         </div>
 
-        {/* Info */}
-        <div className="flex-1 min-w-0">
-          {/* Rank badge */}
+        {/* Player info */}
+        <div className="min-w-0 flex-1">
           {!isNonRank && (
             <span
-              className="mb-2 inline-block rounded px-2 py-0.5 font-mono text-xs font-bold"
+              className="mb-2 inline-block rounded-md px-2 py-0.5 font-mono text-xs font-bold tracking-wide"
               style={{
                 color: player.rankColor,
-                background: `${player.rankColor}15`,
-                border: `1px solid ${player.rankColor}30`,
+                background: `${player.rankColor}12`,
+                border: `1px solid ${player.rankColor}25`,
               }}
             >
               [{player.rank}]
             </span>
           )}
 
-          {/* Username */}
-          <h1 className="font-display text-3xl font-bold text-slate-900 sm:text-4xl">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
             {player.displayname}
           </h1>
 
           {/* Level bar */}
           <div className="mt-3 flex items-center gap-3">
-            <span
-              className="font-mono text-sm font-bold"
-              style={{ color: 'var(--cyan)' }}
-            >
+            <span className="font-mono text-sm font-bold text-[var(--accent)]">
               ⭐ Level {player.level.level}
             </span>
-            <div className="flex-1 max-w-[160px]">
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--surface-3)]">
-                <motion.div
-                  className="progress-bar h-full rounded-full"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${player.level.progress * 100}%` }}
-                  transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
-                />
-              </div>
+            <div className="h-1.5 max-w-[140px] flex-1 overflow-hidden rounded-full bg-slate-100">
+              <motion.div
+                className="progress-bar h-full rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${player.level.progress * 100}%` }}
+                transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
+              />
             </div>
-            <span className="font-mono text-xs text-slate-500">
+            <span className="font-mono text-xs text-slate-400">
               {abbreviate(player.level.xp)} XP
             </span>
           </div>
 
-          {/* Date info */}
-          <div className="mt-2 flex flex-wrap gap-4 text-xs text-gray-500">
-            <span className="flex items-center gap-1">
+          {/* Dates */}
+          <div className="mt-2.5 flex flex-wrap gap-4 text-xs text-slate-400">
+            <span className="flex items-center gap-1.5">
               <Calendar size={11} />
               Joined {formatDate(player.firstLogin)}
             </span>
-            <span className="flex items-center gap-1">
+            <span className="flex items-center gap-1.5">
               <Clock size={11} />
               Last seen {timeAgo(player.lastLogin)}
             </span>
           </div>
 
-          {/* Key stats row */}
-          <div className="mt-5 flex flex-wrap gap-6">
-            <MiniStat
-              label="Karma"
-              value={abbreviate(player.karma)}
-              color="var(--cyan)"
-            />
-            <MiniStat
-              label="Achievement Pts"
-              value={formatNumber(player.achievementPoints)}
-              color="var(--purple)"
-            />
-            <MiniStat
-              label="Daily Rewards"
-              value={formatNumber(player.totalDailyRewards)}
-              color="var(--amber)"
-            />
+          {/* Key stats */}
+          <div className="mt-5 flex flex-wrap gap-6 border-t border-[var(--border)] pt-4">
+            <MiniStat label="Karma"            value={abbreviate(player.karma)}                  color="var(--accent)" />
+            <MiniStat label="Achievement Pts"  value={formatNumber(player.achievementPoints)}   color="var(--purple)" />
+            <MiniStat label="Daily Rewards"    value={formatNumber(player.totalDailyRewards)}   color="var(--amber)" />
           </div>
         </div>
 
-        {/* Action buttons */}
+        {/* Actions */}
         <div className="flex gap-2 sm:flex-col sm:items-end">
           <button
             onClick={handleFavorite}
-            className={favorited ? 'flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors bg-[var(--accent-soft)] border-[rgba(245,158,11,0.4)] text-[var(--amber)] hover:bg-[rgba(245,158,11,0.15)]' : 'flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-[var(--surface-2)]'}
+            className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-all ${
+              favorited
+                ? 'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100'
+                : 'border-[var(--border)] bg-[var(--surface-2)] text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+            }`}
           >
             {favorited ? <Star size={14} fill="currentColor" /> : <Heart size={14} />}
             {favorited ? 'Saved' : 'Save'}
           </button>
           <button
             onClick={handleShare}
-            className="flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-[var(--surface-2)]"
+            className="flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2 text-sm font-medium text-slate-600 transition-all hover:bg-slate-100 hover:text-slate-900"
           >
             <Share2 size={14} />
             Share
