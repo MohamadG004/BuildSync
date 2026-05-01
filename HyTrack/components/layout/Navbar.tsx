@@ -4,12 +4,13 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Star, Home, Menu, X, Activity } from 'lucide-react';
+import { Search, Star, Home, Menu, X, Activity, Hammer } from 'lucide-react';
 import { cn, isValidUsername } from '@/lib/utils';
 
 const NAV_LINKS = [
-  { href: '/', label: 'Home', icon: Home },
-  { href: '/favorites', label: 'Favorites', icon: Star },
+  { href: '/',                 label: 'Home',            icon: Home   },
+  { href: '/favorites',        label: 'Favorites',       icon: Star   },
+  { href: '/guess-the-build',  label: 'Guess the Build', icon: Hammer },
 ];
 
 export function Navbar() {
@@ -32,7 +33,7 @@ export function Navbar() {
       <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
 
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 group">
+        <Link href="/" className="flex items-center gap-2.5 group shrink-0">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--accent)] shadow-sm">
             <Activity size={15} className="text-white" strokeWidth={2.5} />
           </div>
