@@ -1,145 +1,137 @@
 @import "tailwindcss";
 
-/* ─── Custom CSS Variables ─── */
+/* ─── Design Tokens ─── */
 :root {
-  --cyan: #00ffd0;
-  --cyan-dim: #00bfa5;
-  --purple: #a855f7;
-  --purple-dim: #7c3aed;
-  --amber: #f59e0b;
-  --red: #ef4444;
-  --void: #050810;
-  --surface: #0d1117;
-  --surface-2: #161b27;
-  --surface-3: #1e2535;
-  --border: rgba(0, 255, 208, 0.12);
-  --border-hover: rgba(0, 255, 208, 0.3);
-  --text-muted: #6b7280;
-  --font-display: var(--font-display);
-  --font-body: var(--font-body);
-  --font-mono: var(--font-mono);
+  /* Primary accent */
+  --accent: #2563eb;
+  --accent-dim: #1d4ed8;
+  --accent-soft: rgba(37, 99, 235, 0.08);
+  --accent-border: rgba(37, 99, 235, 0.2);
+
+  /* Surfaces */
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-2: #f1f5f9;
+  --surface-3: #e2e8f0;
+
+  /* Borders */
+  --border: rgba(15, 23, 42, 0.07);
+  --border-strong: rgba(15, 23, 42, 0.12);
+  --border-hover: rgba(37, 99, 235, 0.22);
+
+  /* Text */
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --text-subtle: #94a3b8;
+
+  /* Semantic palette — components reference these directly */
+  --cyan: #2563eb;        /* blue-600  */
+  --purple: #7c3aed;      /* violet-600 */
+  --amber: #b45309;       /* amber-700  */
+  --void: #f8fafc;        /* used for online-dot border */
+  --green: #16a34a;
+
+  /* Chart utilities */
+  --chart-grid: rgba(15, 23, 42, 0.06);
+  --chart-axis: #94a3b8;
 }
 
 /* ─── Base ─── */
-* {
-  box-sizing: border-box;
+* { box-sizing: border-box; }
+
+html {
+  background: var(--bg);
+  scroll-behavior: smooth;
 }
 
 body {
-  background-color: var(--void);
-  color: white;
-  font-family: var(--font-body), system-ui, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* ─── Tailwind Utilities ─── */
 @layer utilities {
-  .font-display { font-family: var(--font-display), sans-serif; }
-  .font-body { font-family: var(--font-body), sans-serif; }
-  .font-mono { font-family: var(--font-mono), monospace; }
-  .bg-void { background-color: var(--void); }
-  .bg-surface { background-color: var(--surface); }
-  .bg-surface-2 { background-color: var(--surface-2); }
-  .bg-surface-3 { background-color: var(--surface-3); }
-  .text-cyan { color: var(--cyan); }
-  .text-cyan-dim { color: var(--cyan-dim); }
-  .text-purple { color: var(--purple); }
-  .border-cyan { border-color: var(--border); }
-  .border-cyan-hover:hover { border-color: var(--border-hover); }
+  .font-display  { font-family: 'Inter', sans-serif; }
+  .font-body     { font-family: 'Inter', sans-serif; }
+  .font-mono     { font-family: 'JetBrains Mono', monospace; }
+
+  .bg-void       { background-color: var(--bg); }
+  .bg-surface    { background-color: var(--surface); }
+  .bg-surface-2  { background-color: var(--surface-2); }
+  .bg-surface-3  { background-color: var(--surface-3); }
+
+  .text-cyan     { color: var(--accent); }
+  .text-cyan-dim { color: var(--accent-dim); }
+  .text-purple   { color: var(--purple); }
+  .text-amber    { color: var(--amber); }
+  .text-muted    { color: var(--text-muted); }
+  .text-subtle   { color: var(--text-subtle); }
+
+  .border-subtle { border-color: var(--border); }
 }
 
-/* ─── Grid Overlay Background ─── */
+/* ─── Subtle page texture ─── */
 .grid-overlay {
   background-image:
-    linear-gradient(rgba(0, 255, 208, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 255, 208, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
+    linear-gradient(rgba(15, 23, 42, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
 }
 
-/* ─── Ambient Blobs ─── */
+/* ─── Ambient blobs ─── */
 .blob-1 {
-  background: radial-gradient(circle, #00ffd0 0%, transparent 70%);
-  filter: blur(60px);
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.12) 0%, transparent 70%);
+  filter: blur(70px);
 }
 .blob-2 {
-  background: radial-gradient(circle, #a855f7 0%, transparent 70%);
-  filter: blur(80px);
-}
-.blob-3 {
-  background: radial-gradient(circle, #7c3aed 0%, transparent 70%);
-  filter: blur(100px);
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+  filter: blur(90px);
 }
 
-/* ─── Glassmorphism Card ─── */
+/* ─── Card surface ─── */
 .glass-card {
-  background: rgba(13, 17, 23, 0.7);
-  backdrop-filter: blur(16px);
+  background: var(--surface);
   border: 1px solid var(--border);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .glass-card:hover {
-  border-color: var(--border-hover);
-  box-shadow: 0 0 20px rgba(0, 255, 208, 0.05);
+  border-color: var(--border-strong);
+  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
 }
 
-/* ─── Neon Glow ─── */
-.neon-cyan {
-  text-shadow: 0 0 10px rgba(0, 255, 208, 0.5), 0 0 20px rgba(0, 255, 208, 0.3);
-}
-.neon-purple {
-  text-shadow: 0 0 10px rgba(168, 85, 247, 0.5), 0 0 20px rgba(168, 85, 247, 0.3);
-}
-.neon-border {
-  box-shadow: 0 0 0 1px rgba(0, 255, 208, 0.2), 0 0 15px rgba(0, 255, 208, 0.1);
-}
-.neon-border-purple {
-  box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.3), 0 0 15px rgba(168, 85, 247, 0.1);
-}
-
-/* ─── Scanline Effect ─── */
-.scanlines::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(0, 255, 208, 0.01) 2px,
-    rgba(0, 255, 208, 0.01) 4px
-  );
-  pointer-events: none;
-}
-
-/* ─── Progress Bar ─── */
+/* ─── Progress bar ─── */
 .progress-bar {
-  background: linear-gradient(90deg, var(--cyan), var(--purple));
-  box-shadow: 0 0 8px rgba(0, 255, 208, 0.4);
+  background: linear-gradient(90deg, var(--accent), #60a5fa);
+  box-shadow: 0 0 6px rgba(37, 99, 235, 0.2);
 }
 
 /* ─── Scrollbar ─── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar       { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 255, 208, 0.2);
-  border-radius: 3px;
+  background: rgba(37, 99, 235, 0.15);
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 255, 208, 0.4);
+  background: rgba(37, 99, 235, 0.28);
 }
 
-/* ─── Rank Badge Colors ─── */
-.rank-mvp-plus { color: #00AAAA; }
-.rank-mvp { color: #00AAAA; }
-.rank-vip-plus { color: #55FF55; }
-.rank-vip { color: #55FF55; }
-.rank-youtuber { color: #FF0000; }
-.rank-admin { color: #FF5555; }
-.rank-non { color: #AAAAAA; }
+/* ─── Rank badge colors ─── */
+.rank-mvp-plus  { color: #0891b2; }
+.rank-mvp       { color: #0891b2; }
+.rank-vip-plus  { color: #16a34a; }
+.rank-vip       { color: #16a34a; }
+.rank-youtuber  { color: #dc2626; }
+.rank-admin     { color: #ef4444; }
+.rank-non       { color: var(--text-muted); }
 
-/* ─── Skeleton Loading ─── */
+/* ─── Skeleton shimmer ─── */
 @keyframes shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
 }
 .skeleton {
   background: linear-gradient(
@@ -149,31 +141,37 @@ body {
     var(--surface-2) 100%
   );
   background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-  border-radius: 4px;
+  animation: shimmer 1.6s infinite;
+  border-radius: 8px;
 }
 
-/* ─── Chart Customization ─── */
+/* ─── Recharts light-mode overrides ─── */
 .recharts-tooltip-wrapper .recharts-default-tooltip {
-  background: var(--surface-2) !important;
-  border: 1px solid var(--border) !important;
-  border-radius: 8px !important;
+  background: var(--surface) !important;
+  border: 1px solid var(--border-strong) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08) !important;
 }
 
 /* ─── Toast ─── */
 .toast-custom {
-  background: var(--surface-2) !important;
-  color: white !important;
-  border: 1px solid var(--border) !important;
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border-strong) !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08) !important;
 }
 
-/* ─── Font Family Definitions ─── */
+/* ─── Font definitions ─── */
 .font-display, [class*="font-display"] {
-  font-family: 'Orbitron', sans-serif;
-}
-.font-body, body {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 .font-mono, [class*="font-mono"] {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
 }
+
+/* ─── Legacy class aliases (backwards-compat) ─── */
+.neon-cyan, .neon-purple { text-shadow: none; }
+.neon-border, .neon-border-purple {
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.08);
+}
+.scanlines::after { display: none; }

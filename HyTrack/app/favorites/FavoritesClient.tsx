@@ -14,7 +14,7 @@ export function FavoritesClient() {
 
   function handleRemove(player: FavoritePlayer) {
     removeFavorite(player.uuid);
-    toast(`${player.username} removed from favorites`, { icon: '🗑️' });
+    toast(`${player.username} removed`, { icon: '🗑️' });
   }
 
   function handleClearAll() {
@@ -26,9 +26,9 @@ export function FavoritesClient() {
   if (!loaded) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map(i => (
-            <div key={i} className="skeleton h-28 rounded-2xl" />
+            <div key={i} className="h-28 rounded-2xl border border-[var(--border)] skeleton" />
           ))}
         </div>
       </div>
@@ -37,29 +37,30 @@ export function FavoritesClient() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
-      {/* Header */}
+      {/* Page header */}
       <motion.div
-        initial={{ opacity: 0, y: -10 }}
+        initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-8 flex items-center justify-between"
+        className="mb-8 flex items-end justify-between"
       >
         <div>
-          <h1 className="font-display text-3xl font-bold text-white">
-            <span style={{ color: 'var(--amber)' }}>★</span> Favorites
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+            Favorites
           </h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-slate-400">
             {favorites.length === 0
               ? 'No saved players yet'
               : `${favorites.length} player${favorites.length !== 1 ? 's' : ''} saved`}
           </p>
         </div>
+
         {favorites.length > 0 && (
           <button
             onClick={handleClearAll}
-            className="flex items-center gap-2 rounded-lg border border-[rgba(239,68,68,0.2)] bg-[rgba(239,68,68,0.05)] px-3 py-2 text-sm text-red-400 transition-all hover:bg-[rgba(239,68,68,0.1)]"
+            className="flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-red-100"
           >
             <Trash2 size={13} />
-            Clear All
+            Clear all
           </button>
         )}
       </motion.div>
@@ -67,34 +68,30 @@ export function FavoritesClient() {
       {/* Empty state */}
       {favorites.length === 0 ? (
         <motion.div
-          initial={{ opacity: 0, scale: 0.97 }}
+          initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="glass-card flex flex-col items-center justify-center rounded-2xl p-20 text-center"
+          className="flex flex-col items-center justify-center rounded-2xl border border-[var(--border)] bg-white px-8 py-20 text-center shadow-sm"
         >
-          <Star size={40} className="mb-4 text-gray-700" />
-          <h2 className="font-display text-lg font-bold text-white mb-2">No favorites yet</h2>
-          <p className="text-sm text-gray-500 max-w-xs mb-6">
-            Search for a player and click the Save button to add them to your favorites.
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--surface-2)]">
+            <Star size={24} className="text-slate-300" />
+          </div>
+          <h2 className="mb-2 text-base font-semibold text-slate-900">No favorites yet</h2>
+          <p className="mb-7 max-w-xs text-sm text-slate-400">
+            Search for a player and save them to quickly access their stats later.
           </p>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-black"
-            style={{ background: 'var(--cyan)' }}
+            className="inline-flex items-center gap-2 rounded-xl bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--accent-dim)] active:scale-95"
           >
-            <Search size={14} />
-            Search Players
+            <Search size={13} />
+            Search players
           </Link>
         </motion.div>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <AnimatePresence>
             {favorites.map((player, i) => (
-              <FavoriteCard
-                key={player.uuid}
-                player={player}
-                index={i}
-                onRemove={handleRemove}
-              />
+              <FavoriteCard key={player.uuid} player={player} index={i} onRemove={handleRemove} />
             ))}
           </AnimatePresence>
         </div>
@@ -116,26 +113,15 @@ function FavoriteCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ delay: index * 0.06 }}
-      className="glass-card group relative overflow-hidden rounded-2xl p-4"
+      exit={{ opacity: 0, scale: 0.96 }}
+      transition={{ delay: index * 0.04 }}
+      className="group rounded-2xl border border-[var(--border)] bg-white p-4 shadow-sm transition-all hover:shadow-md"
     >
-      {/* Glow */}
-      <div
-        className="absolute -right-8 -top-8 h-24 w-24 rounded-full opacity-0 blur-2xl transition-opacity group-hover:opacity-20 pointer-events-none"
-        style={{ background: player.rankColor ?? 'var(--cyan)' }}
-      />
-
       <div className="flex items-center gap-3">
         {/* Avatar */}
-        <div
-          className="relative h-14 w-14 overflow-hidden rounded-xl flex-shrink-0"
-          style={{
-            border: `1px solid ${(player.rankColor ?? 'var(--cyan)')}40`,
-          }}
-        >
+        <div className="relative h-14 w-14 overflow-hidden rounded-xl border border-[var(--border)] flex-shrink-0">
           <Image
             src={getAvatarUrl(player.uuid, 64)}
             alt={player.username}
@@ -146,48 +132,36 @@ function FavoriteCard({
         </div>
 
         {/* Info */}
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           {!isNonRank && (
-            <span
-              className="inline-block rounded px-1.5 py-0.5 font-mono text-[10px] font-bold mb-1"
-              style={{
-                color: player.rankColor,
-                background: `${player.rankColor}15`,
-                border: `1px solid ${player.rankColor}30`,
-              }}
-            >
+            <span className="mb-1 inline-block rounded-md bg-[var(--accent-soft)] px-1.5 py-0.5 font-mono text-[10px] font-bold text-[var(--accent)]">
               [{player.rank}]
             </span>
           )}
-          <p className="font-display text-sm font-bold text-white truncate">
-            {player.username}
-          </p>
-          <p className="font-mono text-xs" style={{ color: 'var(--cyan)' }}>
-            ⭐ {player.level}
-          </p>
+          <p className="truncate text-sm font-semibold text-slate-900">{player.username}</p>
+          <p className="text-xs text-slate-400">Level {player.level}</p>
         </div>
 
-        {/* Remove */}
+        {/* Remove button */}
         <button
           onClick={e => { e.preventDefault(); onRemove(player); }}
-          className="opacity-0 group-hover:opacity-100 rounded-lg p-1.5 text-gray-600 transition-all hover:bg-[rgba(239,68,68,0.1)] hover:text-red-400"
+          className="rounded-lg p-1.5 text-slate-300 opacity-0 transition-all hover:bg-red-50 hover:text-red-500 group-hover:opacity-100"
         >
-          <Trash2 size={13} />
+          <Trash2 size={14} />
         </button>
       </div>
 
       {/* Footer */}
-      <div className="mt-3 flex items-center justify-between border-t border-[rgba(255,255,255,0.05)] pt-3">
-        <span className="flex items-center gap-1 text-[10px] text-gray-600">
-          <Clock size={9} />
+      <div className="mt-3 flex items-center justify-between border-t border-[var(--border)] pt-3">
+        <span className="flex items-center gap-1 text-[11px] text-slate-400">
+          <Clock size={10} />
           Saved {formatDate(new Date(player.addedAt).getTime())}
         </span>
         <Link
           href={`/player/${player.username}`}
-          className="flex items-center gap-1 text-xs font-medium transition-colors hover:text-white"
-          style={{ color: 'var(--cyan)' }}
+          className="flex items-center gap-1 text-xs font-semibold text-[var(--accent)] transition hover:underline"
         >
-          View Stats
+          View
           <ExternalLink size={10} />
         </Link>
       </div>
