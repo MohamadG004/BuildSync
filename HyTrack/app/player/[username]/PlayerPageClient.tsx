@@ -8,6 +8,12 @@ import { OverallStats } from '@/components/player/OverallStats';
 import { BedWarsStatsComponent } from '@/components/player/BedWarsStats';
 import { SkyWarsStatsComponent } from '@/components/player/SkyWarsStats';
 import { DuelsStatsComponent } from '@/components/player/DuelsStats';
+import { BuildBattleStatsComponent } from '@/components/player/BuildBattleStats';
+import { MurderMysteryStatsComponent } from '@/components/player/MurderMysteryStats';
+import { ArcadeStatsComponent } from '@/components/player/ArcadeStats';
+import { TNTGamesStatsComponent } from '@/components/player/TNTGamesStats';
+import { UHCStatsComponent } from '@/components/player/UHCStats';
+import { PitStatsComponent } from '@/components/player/PitStats';
 import {
   PlayerHeaderSkeleton,
   StatGridSkeleton,
@@ -15,13 +21,29 @@ import {
 } from '@/components/ui/LoadingSkeleton';
 import { cn } from '@/lib/utils';
 
-type Tab = 'overview' | 'bedwars' | 'skywars' | 'duels';
+type Tab =
+  | 'overview'
+  | 'bedwars'
+  | 'skywars'
+  | 'duels'
+  | 'buildbattle'
+  | 'murdermystery'
+  | 'arcade'
+  | 'tntgames'
+  | 'uhc'
+  | 'pit';
 
 const TABS: { id: Tab; label: string }[] = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'bedwars',  label: 'BedWars' },
-  { id: 'skywars',  label: 'SkyWars' },
-  { id: 'duels',    label: 'Duels' },
+  { id: 'overview',      label: 'Overview' },
+  { id: 'bedwars',       label: 'BedWars' },
+  { id: 'skywars',       label: 'SkyWars' },
+  { id: 'duels',         label: 'Duels' },
+  { id: 'buildbattle',   label: 'Build Battle' },
+  { id: 'murdermystery', label: 'Murder Mystery' },
+  { id: 'arcade',        label: 'Arcade' },
+  { id: 'tntgames',      label: 'TNT Games' },
+  { id: 'uhc',           label: 'UHC' },
+  { id: 'pit',           label: 'The Pit' },
 ];
 
 interface PlayerData {
@@ -41,6 +63,12 @@ interface PlayerData {
     Bedwars?: object;
     SkyWars?: object;
     Duels?: object;
+    BuildBattle?: object;
+    MurderMystery?: object;
+    Arcade?: object;
+    TNTGames?: object;
+    UHC?: object;
+    Pit?: object;
     [key: string]: unknown;
   };
 }
@@ -109,8 +137,8 @@ export function PlayerPageClient({ username }: { username: string }) {
     <div className="mx-auto max-w-6xl space-y-5 px-4 py-8 sm:px-6">
       <PlayerHeader player={player} />
 
-      {/* Tab bar */}
-      <div className="flex gap-1.5 overflow-x-auto rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-1">
+      {/* Tab bar — horizontally scrollable on mobile */}
+      <div className="flex gap-1.5 overflow-x-auto rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-1 scrollbar-hide">
         {TABS.map(tab => {
           const isActive = activeTab === tab.id;
           return (
@@ -161,6 +189,36 @@ export function PlayerPageClient({ username }: { username: string }) {
             player.stats.Duels
               ? <DuelsStatsComponent stats={player.stats.Duels as any} />
               : <EmptyState game="Duels" />
+          )}
+          {activeTab === 'buildbattle' && (
+            player.stats.BuildBattle
+              ? <BuildBattleStatsComponent stats={player.stats.BuildBattle as any} />
+              : <EmptyState game="Build Battle" />
+          )}
+          {activeTab === 'murdermystery' && (
+            player.stats.MurderMystery
+              ? <MurderMysteryStatsComponent stats={player.stats.MurderMystery as any} />
+              : <EmptyState game="Murder Mystery" />
+          )}
+          {activeTab === 'arcade' && (
+            player.stats.Arcade
+              ? <ArcadeStatsComponent stats={player.stats.Arcade as any} />
+              : <EmptyState game="Arcade" />
+          )}
+          {activeTab === 'tntgames' && (
+            player.stats.TNTGames
+              ? <TNTGamesStatsComponent stats={player.stats.TNTGames as any} />
+              : <EmptyState game="TNT Games" />
+          )}
+          {activeTab === 'uhc' && (
+            player.stats.UHC
+              ? <UHCStatsComponent stats={player.stats.UHC as any} />
+              : <EmptyState game="UHC Champions" />
+          )}
+          {activeTab === 'pit' && (
+            player.stats.Pit
+              ? <PitStatsComponent stats={player.stats.Pit as any} />
+              : <EmptyState game="The Pit" />
           )}
         </motion.div>
       </AnimatePresence>
