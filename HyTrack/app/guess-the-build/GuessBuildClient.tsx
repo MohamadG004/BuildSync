@@ -94,7 +94,7 @@ const DIFFICULTY_CONFIG = {
 
 function pickTheme(exclude?: GuessBuildTheme): { theme: GuessBuildTheme; seed: number } {
   const pool = exclude
-    ? GUESS_BUILD_THEMES.filter(t => t.theme !== exclude.theme)
+    ? GUESS_BUILD_THEMES.filter((t: GuessBuildTheme) => t.theme !== exclude.theme)
     : GUESS_BUILD_THEMES;
   const theme = pool[Math.floor(Math.random() * pool.length)];
   const seed  = Math.floor(Math.random() * 999999);
@@ -106,7 +106,7 @@ function pickTheme(exclude?: GuessBuildTheme): { theme: GuessBuildTheme; seed: n
 function isCorrect(guess: string, theme: GuessBuildTheme): boolean {
   const g = guess.trim().toLowerCase();
   if (g === theme.theme.toLowerCase()) return true;
-  return (theme.aliases ?? []).some(a => a.toLowerCase() === g);
+  return (theme.aliases ?? []).some((a: string) => a.toLowerCase() === g);
 }
 
 // ── Main component ─────────────────────────────────────────────────────────────
@@ -127,8 +127,8 @@ export function GuessBuildClient() {
   const inputRef = useRef<HTMLInputElement>(null);
   const nextTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const loadTheme = useCallback((exclude?: GuessBuildTheme, diff: Difficulty = difficulty) => {
-    const { theme, seed: s } = pickTheme(exclude);
+  const loadTheme = useCallback((exclude?: GuessBuildTheme | null, diff: Difficulty = difficulty) => {
+    const { theme, seed: s } = pickTheme(exclude ?? undefined);
     setCurrentTheme(theme);
     setSeed(s);
     setMask(buildMask(theme.theme, diff, s));
@@ -291,7 +291,7 @@ export function GuessBuildClient() {
           {/* Theme length hint */}
           {currentTheme && (
             <p className="absolute top-4 left-4 text-xs text-slate-400 font-mono">
-              {currentTheme.theme.split(' ').map(w => w.length).join(' + ')} letters
+              {currentTheme.theme.split(' ').map((w: string) => w.length).join(' + ')} letters
             </p>
           )}
 
