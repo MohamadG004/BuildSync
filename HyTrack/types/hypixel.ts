@@ -116,6 +116,18 @@ export interface BuildBattleStats {
   coins?: number;
   correct_guesses?: number;
   total_votes?: number;
+  // Wins by mode
+  wins_solo_normal?: number;
+  wins_solo_pro?: number;
+  wins_teams_normal?: number;
+  wins_guess_the_build?: number;
+  // Score by mode
+  score_solo_normal?: number;
+  score_solo_pro?: number;
+  score_teams_normal?: number;
+  score_guess_the_build?: number;
+  // Supervoter
+  supervoter?: boolean;
 }
 
 export interface MurderMysteryStats {
@@ -139,11 +151,19 @@ export interface MurderMysteryStats {
 
 export interface ArcadeStats {
   coins?: number;
+  // Galaxy Wars
   wins_galaxy_wars?: number;
   kills_galaxy_wars?: number;
+  // Party Games
   wins_party_games_1?: number;
   wins_party_games_2?: number;
   wins_party_games_3?: number;
+  // Other games
+  wins_pixel_painters?: number;
+  wins_simon_says?: number;
+  wins_bounty_hunters?: number;
+  wins_mini_walls?: number;
+  zombie_kills_zombies?: number;
 }
 
 export interface TNTGamesStats {
