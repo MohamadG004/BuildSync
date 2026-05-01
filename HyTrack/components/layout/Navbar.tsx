@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Star, Home, Menu, X, Zap } from 'lucide-react';
+import { Search, Star, Home, Menu, X, Activity } from 'lucide-react';
 import { cn, isValidUsername } from '@/lib/utils';
 
 const NAV_LINKS = [
@@ -20,63 +20,58 @@ export function Navbar() {
 
   function handleSearch(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-
     const trimmed = search.trim();
     if (!trimmed || !isValidUsername(trimmed)) return;
-
     router.push(`/player/${trimmed}`);
     setSearch('');
     setMobileOpen(false);
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-white/80 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-white/90 backdrop-blur-xl">
       <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--accent-soft)]">
-            <Zap size={18} className="text-[var(--accent)]" />
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--accent)] shadow-sm">
+            <Activity size={15} className="text-white" strokeWidth={2.5} />
           </div>
-          <span className="font-display text-lg font-semibold tracking-tight text-slate-900">
-            HY<span className="text-[var(--accent)]">TRACK</span>
+          <span className="font-display text-base font-bold tracking-tight text-slate-900">
+            Hy<span className="text-[var(--accent)]">Track</span>
           </span>
         </Link>
 
-        {/* Desktop Nav */}
-        <div className="hidden items-center gap-6 md:flex">
+        {/* Desktop nav links */}
+        <div className="hidden items-center gap-1 md:flex">
           {NAV_LINKS.map(({ href, label, icon: Icon }) => {
             const active = pathname === href;
-
             return (
               <Link
                 key={href}
                 href={href}
                 className={cn(
-                  'flex items-center gap-1.5 text-sm font-medium transition-colors',
+                  'flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-all',
                   active
-                    ? 'text-[var(--accent)]'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-[var(--accent-soft)] text-[var(--accent)]'
+                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
                 )}
               >
-                <Icon size={15} />
+                <Icon size={14} />
                 {label}
               </Link>
             );
           })}
         </div>
 
-        {/* Quick Search */}
-        <form onSubmit={handleSearch} className="hidden flex-1 max-w-xs md:flex">
+        {/* Search */}
+        <form onSubmit={handleSearch} className="hidden flex-1 max-w-72 md:flex">
           <div className="relative w-full">
-            <Search
-              size={14}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-            />
+            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder="Quick search..."
-              className="w-full rounded-lg border border-[var(--border)] bg-white py-2 pl-9 pr-4 text-sm text-slate-900 shadow-sm outline-none transition-all placeholder:text-slate-400 focus:border-[rgba(37,99,235,0.35)] focus:ring-2 focus:ring-[rgba(37,99,235,0.08)]"
+              placeholder="Search player…"
+              className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface-2)] py-2 pl-8.5 pr-4 text-sm text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-[var(--accent-border)] focus:bg-white focus:ring-2 focus:ring-[var(--accent-soft)]"
             />
           </div>
         </form>
@@ -84,58 +79,55 @@ export function Navbar() {
         {/* Mobile toggle */}
         <button
           onClick={() => setMobileOpen(v => !v)}
-          className="text-slate-600 hover:text-slate-900 md:hidden"
+          className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 md:hidden transition-colors"
         >
-          {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+          {mobileOpen ? <X size={18} /> : <Menu size={18} />}
         </button>
       </nav>
 
-      {/* Mobile Drawer */}
+      {/* Mobile drawer */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.18 }}
             className="overflow-hidden border-t border-[var(--border)] bg-white md:hidden"
           >
-            <div className="flex flex-col gap-4 px-4 py-4">
-              {/* Mobile Search */}
+            <div className="flex flex-col gap-3 px-4 py-4">
               <form onSubmit={handleSearch}>
                 <div className="relative">
-                  <Search
-                    size={14}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                  />
+                  <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
                     value={search}
                     onChange={e => setSearch(e.target.value)}
-                    placeholder="Search player..."
-                    className="w-full rounded-lg border border-[var(--border)] bg-white py-2 pl-9 pr-4 text-sm text-slate-900 outline-none placeholder:text-slate-400"
+                    placeholder="Search player…"
+                    className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface-2)] py-2.5 pl-8.5 pr-4 text-sm text-slate-900 outline-none placeholder:text-slate-400"
                   />
                 </div>
               </form>
-
-              {/* Mobile Nav */}
-              {NAV_LINKS.map(({ href, label, icon: Icon }) => {
-                const active = pathname === href;
-
-                return (
-                  <Link
-                    key={href}
-                    href={href}
-                    onClick={() => setMobileOpen(false)}
-                    className={cn(
-                      'flex items-center gap-2 text-sm font-medium',
-                      active ? 'text-[var(--accent)]' : 'text-slate-600'
-                    )}
-                  >
-                    <Icon size={16} />
-                    {label}
-                  </Link>
-                );
-              })}
+              <div className="flex flex-col gap-1">
+                {NAV_LINKS.map(({ href, label, icon: Icon }) => {
+                  const active = pathname === href;
+                  return (
+                    <Link
+                      key={href}
+                      href={href}
+                      onClick={() => setMobileOpen(false)}
+                      className={cn(
+                        'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                        active
+                          ? 'bg-[var(--accent-soft)] text-[var(--accent)]'
+                          : 'text-slate-600 hover:bg-slate-50'
+                      )}
+                    >
+                      <Icon size={15} />
+                      {label}
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
           </motion.div>
         )}
