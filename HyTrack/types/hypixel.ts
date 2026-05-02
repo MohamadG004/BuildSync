@@ -78,7 +78,9 @@ export interface SkyWarsStats {
   games_played_skywars?: number;
   winstreak?: number;
   coins?: number;
-  level?: number;
+  // NOTE: The Hypixel API does NOT return a `level` field for SkyWars.
+  // Use `skywars_experience` and calculate the level with getSkyWarsLevel().
+  skywars_experience?: number;
   heads?: number;
   assists?: number;
   souls_gathered?: number;

@@ -130,6 +130,41 @@ export function getBedwarsProgress(xp: number) {
   };
 }
 
+/**
+ * Calculate SkyWars level (star) from skywars_experience.
+ * The Hypixel API does NOT return a level field — only skywars_experience.
+ * Levels 1–11 use a piecewise XP table; level 12+ uses a linear formula.
+ */
+export function getSkyWarsLevel(xp: number): number {
+  const xps = [0, 20, 70, 150, 250, 500, 1000, 2000, 3500, 6000, 10000, 15000];
+  if (xp >= 15000) {
+    return Math.floor((xp - 15000) / 10000 + 12);
+  }
+  for (let i = 0; i < xps.length; i++) {
+    if (xp < xps[i]) {
+      return i; // whole star count
+    }
+  }
+  return 12;
+}
+
+/**
+ * Calculate exact (decimal) SkyWars level for progress bars.
+ * e.g. 4.5 means halfway through level 4 → 5.
+ */
+export function getSkyWarsLevelExact(xp: number): number {
+  const xps = [0, 20, 70, 150, 250, 500, 1000, 2000, 3500, 6000, 10000, 15000];
+  if (xp >= 15000) {
+    return (xp - 15000) / 10000 + 12;
+  }
+  for (let i = 0; i < xps.length; i++) {
+    if (xp < xps[i]) {
+      return i + (xp - xps[i - 1]) / (xps[i] - xps[i - 1]);
+    }
+  }
+  return 12;
+}
+
 /** Format date to readable string */
 export function formatDate(timestamp: number | undefined): string {
   if (!timestamp) return 'Unknown';
