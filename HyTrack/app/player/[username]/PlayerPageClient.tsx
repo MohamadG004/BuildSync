@@ -126,7 +126,7 @@ export function PlayerPageClient({ username }: { username: string }) {
       <PlayerHeader player={player} />
 
       {/* Tab bar — horizontally scrollable on mobile */}
-      <div className="flex gap-1.5 overflow-x-auto rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-1 scrollbar-hide">
+      <div className="flex justify-center gap-1.5 overflow-x-auto rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-1 scrollbar-hide">
         {TABS.map(tab => {
           const isActive = activeTab === tab.id;
           return (
