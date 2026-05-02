@@ -29,7 +29,7 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-white/90 backdrop-blur-xl">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+      <nav className="relative mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 group shrink-0">
@@ -42,7 +42,7 @@ export function Navbar() {
         </Link>
 
         {/* Desktop nav links */}
-        <div className="hidden items-center gap-1 md:flex">
+        <div className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 md:flex">
           {NAV_LINKS.map(({ href, label, icon: Icon }) => {
             const active = pathname === href;
             return (
