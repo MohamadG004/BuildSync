@@ -229,7 +229,7 @@ export function isValidUsername(username: string): boolean {
 
 /** Get Minecraft avatar URL */
 export function getAvatarUrl(uuid: string, size = 128): string {
-  return `https://crafatar.com/avatars/${uuid}?size=${size}&overlay=true`;
+  return `https://mc-heads.net/avatar/${uuid}/${size}`;
 }
 
 /** Get 3D render URL */
