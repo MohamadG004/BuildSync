@@ -82,27 +82,12 @@ function ThemeDisplay({ theme, mask, solved, wrong }: ThemeDisplayProps) {
     ? 'border-red-300 bg-red-50'
     : 'border-[var(--border-strong)] bg-[var(--surface-2)]';
 
-  const spaceLineColor = solved
-    ? 'bg-green-300'
-    : wrong
-    ? 'bg-red-200'
-    : 'bg-slate-300';
-
   return (
     <div className="flex flex-wrap justify-center gap-x-1 gap-y-2 items-center">
       {chars.map((ch, i) => {
-        // ── Space tile: visible separator ───────────────────────────────────
+        // ── Space: plain gap between words ──────────────────────────────────
         if (ch === ' ') {
-          return (
-            <div
-              key={i}
-              className="flex flex-col items-center justify-center self-center mx-1"
-              aria-label="space"
-              title="word break"
-            >
-              <div className={cn('h-0.5 w-4 rounded-full', spaceLineColor)} />
-            </div>
-          );
+          return <div key={i} className="w-5" aria-hidden />;
         }
 
         const shown = mask[i] || solved;
@@ -399,7 +384,7 @@ export function GuessBuildClient() {
           {/* Theme letter-count hint */}
           {currentTheme && (
             <p className="absolute top-4 left-4 text-xs text-slate-400 font-mono">
-              {currentTheme.theme.split(' ').map((w: string) => w.length).join(' + ')} letters
+              {currentTheme.theme.length} characters
             </p>
           )}
 
@@ -534,7 +519,7 @@ export function GuessBuildClient() {
           </div>
         </div>
         <p className="mt-3 text-xs text-slate-400">
-          The <span className="mx-1 inline-block w-4 h-0.5 rounded-full bg-slate-300 align-middle" /> bar between tiles marks a word break.
+          Gaps between tiles mark word breaks.
           Shortcuts count! Try <code className="rounded bg-slate-100 px-1 py-0.5">TV</code> for Television.
           Answers are case-insensitive.
         </p>
