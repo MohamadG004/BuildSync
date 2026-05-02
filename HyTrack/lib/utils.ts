@@ -210,9 +210,9 @@ export function getPlayerRank(player: HypixelPlayer): { label: string; color: st
   const rank = player.newPackageRank;
   switch (rank) {
     case 'MVP_PLUS':
-      return { label: 'MVP+', color: '#00AAAA', gradient: 'from-cyan-400 to-teal-500' };
+      return { label: 'MVP+', color: '#55FFFF', gradient: 'from-cyan-400 to-teal-500' };
     case 'MVP':
-      return { label: 'MVP', color: '#00AAAA', gradient: 'from-cyan-400 to-teal-500' };
+      return { label: 'MVP', color: '#55FFFF', gradient: 'from-cyan-400 to-teal-500' };
     case 'VIP_PLUS':
       return { label: 'VIP+', color: '#55FF55', gradient: 'from-green-400 to-emerald-500' };
     case 'VIP':
