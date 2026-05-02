@@ -218,7 +218,7 @@ export function GuessBuildClient() {
       setStatus('correct');
       setScore(s => s + 1);
       setStreak(st => st + 1);
-      nextTimerRef.current = setTimeout(() => loadTheme(currentTheme), 500);
+      nextTimerRef.current = setTimeout(() => loadTheme(currentTheme), 400);
     } else {
       setStatus('wrong');
       setStreak(0);
@@ -272,7 +272,7 @@ export function GuessBuildClient() {
           Guess the Build
         </h1>
         <p className="mt-1 text-sm text-slate-400">
-          Type the Build Battle theme — just like the real game.
+          Type the Build Battle theme - just like the real game.
         </p>
       </motion.div>
 
@@ -423,7 +423,7 @@ export function GuessBuildClient() {
                 className="mt-5 flex items-center gap-2 text-sm font-semibold text-red-500"
               >
                 <X size={16} />
-                Not quite — try again!
+                Not quite - try again!
               </motion.div>
             )}
           </AnimatePresence>
@@ -439,7 +439,7 @@ export function GuessBuildClient() {
                 setGuess(e.target.value);
                 if (status === 'wrong') setStatus('idle');
               }}
-              placeholder="Type your answer and press Enter…"
+              placeholder="Type your answer here"
               disabled={status === 'correct'}
               autoComplete="off"
               autoCorrect="off"
@@ -531,26 +531,26 @@ export function GuessBuildClient() {
               className="mt-0.5 h-5 w-5 shrink-0 rounded text-white flex items-center justify-center text-[10px] font-bold"
               style={{ background: DIFFICULTY_CONFIG.easy.color }}
             >E</span>
-            <span><strong className="text-slate-700">Easy</strong> — exactly 65% of letters revealed. Great for warming up.</span>
+            <span><strong className="text-slate-700">Easy</strong> - 65% of letters revealed. Great for warming up.</span>
           </div>
           <div className="flex gap-2">
             <span
               className="mt-0.5 h-5 w-5 shrink-0 rounded text-white flex items-center justify-center text-[10px] font-bold"
               style={{ background: DIFFICULTY_CONFIG.medium.color }}
             >M</span>
-            <span><strong className="text-slate-700">Medium</strong> — exactly 25% revealed. Mimics the real game challenge.</span>
+            <span><strong className="text-slate-700">Medium</strong> - 25% of letters revealed. Simulates a real in-game situation.</span>
           </div>
           <div className="flex gap-2">
             <span
               className="mt-0.5 h-5 w-5 shrink-0 rounded text-white flex items-center justify-center text-[10px] font-bold"
               style={{ background: DIFFICULTY_CONFIG.hard.color }}
             >H</span>
-            <span><strong className="text-slate-700">Hard</strong> — no letters revealed. Pure memory and instinct.</span>
+            <span><strong className="text-slate-700">Hard</strong> - no letters revealed. Pure memory and instinct.</span>
           </div>
         </div>
         <p className="mt-3 text-xs text-slate-400">
           Gaps between tiles mark word breaks.
-          Shortcuts count! Try <code className="rounded bg-slate-100 px-1 py-0.5">TV</code> for Television.
+          Shortcuts count!
           Answers are case-insensitive.
         </p>
       </motion.div>
