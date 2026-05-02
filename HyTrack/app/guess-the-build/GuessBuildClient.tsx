@@ -87,7 +87,7 @@ function ThemeDisplay({ theme, mask, solved, wrong }: ThemeDisplayProps) {
       {chars.map((ch, i) => {
         // ── Space: plain gap between words ──────────────────────────────────
         if (ch === ' ') {
-          return <div key={i} className="w-5" aria-hidden />;
+          return <div key={i} className="w-3" aria-hidden />;
         }
 
         const shown = mask[i] || solved;
@@ -218,7 +218,7 @@ export function GuessBuildClient() {
       setStatus('correct');
       setScore(s => s + 1);
       setStreak(st => st + 1);
-      nextTimerRef.current = setTimeout(() => loadTheme(currentTheme), 900);
+      nextTimerRef.current = setTimeout(() => loadTheme(currentTheme), 500);
     } else {
       setStatus('wrong');
       setStreak(0);
@@ -411,7 +411,7 @@ export function GuessBuildClient() {
                 className="mt-5 flex items-center gap-2 text-sm font-semibold text-[var(--green)]"
               >
                 <Check size={16} />
-                Correct! Next theme loading…
+                Correct!
               </motion.div>
             )}
             {status === 'wrong' && (
@@ -484,6 +484,36 @@ export function GuessBuildClient() {
               Skip
             </button>
           </div>
+
+          {/* Aliases shown after reveal */}
+          <AnimatePresence>
+            {showAnswer && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mt-3 overflow-hidden"
+              >
+                {currentTheme?.aliases && currentTheme.aliases.length > 0 ? (
+                  <>
+                    <p className="text-xs text-slate-400 mb-1.5">Also accepted:</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {currentTheme.aliases.map((alias) => (
+                        <span
+                          key={alias}
+                          className="rounded-md bg-slate-100 px-2 py-1 font-mono text-xs text-slate-600"
+                        >
+                          {alias}
+                        </span>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <p className="text-xs text-slate-400">No shortcuts for this one - exact answer only.</p>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </motion.div>
 
