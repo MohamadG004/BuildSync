@@ -2,11 +2,9 @@
 
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Star, Heart, Calendar, Clock, Share2 } from 'lucide-react';
+import { Calendar, Clock, Share2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { formatNumber, formatDate, timeAgo, getAvatarUrl, abbreviate } from '@/lib/utils';
-import { useFavorites } from '@/hooks/useFavorites';
-import type { FavoritePlayer } from '@/types/hypixel';
 import { MiniStat } from '@/components/ui/StatCard';
 
 interface PlayerData {
@@ -25,24 +23,6 @@ interface PlayerData {
 }
 
 export function PlayerHeader({ player }: { player: PlayerData }) {
-  const { isFavorite, toggleFavorite } = useFavorites();
-  const favorited = isFavorite(player.uuid);
-
-  function handleFavorite() {
-    const fav: FavoritePlayer = {
-      uuid: player.uuid,
-      username: player.username,
-      rank: player.rank,
-      rankColor: player.rankColor,
-      level: player.level.level,
-      addedAt: new Date().toISOString(),
-    };
-    const added = toggleFavorite(fav);
-    toast(added ? `${player.username} added to favorites!` : `${player.username} removed`, {
-      icon: added ? '⭐' : '💔',
-    });
-  }
-
   function handleShare() {
     navigator.clipboard.writeText(window.location.href);
     toast.success('Link copied!');
@@ -157,17 +137,6 @@ export function PlayerHeader({ player }: { player: PlayerData }) {
 
         {/* Actions */}
         <div className="flex gap-2 sm:flex-col sm:items-end">
-          <button
-            onClick={handleFavorite}
-            className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-all ${
-              favorited
-                ? 'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100'
-                : 'border-[var(--border)] bg-[var(--surface-2)] text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-            }`}
-          >
-            {favorited ? <Star size={14} fill="currentColor" /> : <Heart size={14} />}
-            {favorited ? 'Saved' : 'Save'}
-          </button>
           <button
             onClick={handleShare}
             className="flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2 text-sm font-medium text-slate-600 transition-all hover:bg-slate-100 hover:text-slate-900"

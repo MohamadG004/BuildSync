@@ -6,7 +6,7 @@ import {
   RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, Tooltip
 } from 'recharts';
 import { StatCard } from '@/components/ui/StatCard';
-import { formatNumber, formatRatio, abbreviate, getStatColor } from '@/lib/utils';
+import { formatNumber, formatRatio, abbreviate, getStatColor, getSkyWarsLevel } from '@/lib/utils';
 import type { SkyWarsStats } from '@/types/hypixel';
 
 function ChartTooltip({ active, payload }: any) {
@@ -24,6 +24,10 @@ export function SkyWarsStatsComponent({ stats }: { stats: SkyWarsStats }) {
   const kills       = stats.kills ?? 0;
   const deaths      = stats.deaths ?? 0;
   const gamesPlayed = stats.games_played_skywars ?? 0;
+
+  // The Hypixel API does not return a level field for SkyWars —
+  // it must be calculated from skywars_experience using the piecewise XP table.
+  const level = getSkyWarsLevel(stats.skywars_experience ?? 0);
 
   const kdr           = parseFloat(formatRatio(kills, deaths));
   const wlr           = parseFloat(formatRatio(wins, losses));
@@ -55,7 +59,7 @@ export function SkyWarsStatsComponent({ stats }: { stats: SkyWarsStats }) {
         <div className="inline-flex items-center gap-2 rounded-xl border px-4 py-2"
           style={{ borderColor: 'rgba(124,58,237,0.2)', background: 'rgba(124,58,237,0.07)' }}>
           <span className="font-mono text-sm font-bold" style={{ color: 'var(--purple)' }}>
-            ✦ Level {stats.level ?? 1} SkyWars
+            ✦ Level {level} SkyWars
           </span>
         </div>
         <span className="text-sm text-slate-400">{formatNumber(stats.coins ?? 0)} coins</span>

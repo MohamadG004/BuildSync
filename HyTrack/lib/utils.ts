@@ -34,7 +34,6 @@ export function formatPercent(value: number | undefined, total: number | undefin
 
 /** Calculate Hypixel network level from XP */
 export function getNetworkLevel(xp: number): PlayerLevel {
-  // Hypixel network XP formula
   const BASE = 10000;
   const GROWTH = 2500;
   const REVERSE_PQ_PREFIX = -(BASE - 0.5 * GROWTH) / GROWTH;
@@ -42,7 +41,12 @@ export function getNetworkLevel(xp: number): PlayerLevel {
   const GROWTH_DIVIDES_2 = 2 / GROWTH;
 
   const safeXp = Math.max(0, xp);
-  const level = Math.floor(1 + REVERSE_PQ_PREFIX + Math.sqrt(REVERSE_CONST + GROWTH_DIVIDES_2 * safeXp));
+  const level = Math.floor(
+    1 +
+      REVERSE_PQ_PREFIX +
+      Math.sqrt(REVERSE_CONST + GROWTH_DIVIDES_2 * safeXp)
+  );
+
   const currentLevelXp = getXpForLevel(level);
   const nextLevelXp = getXpForLevel(level + 1);
   const xpInLevel = safeXp - currentLevelXp;
@@ -62,37 +66,107 @@ function getXpForLevel(level: number): number {
   const BASE = 10000;
   const GROWTH = 2500;
   const reverse = level - 2;
-  return Math.floor(BASE * reverse + GROWTH * reverse * (reverse - 1) / 2);
+  return Math.floor(BASE * reverse + (GROWTH * reverse * (reverse - 1)) / 2);
 }
 
-/** Get BedWars level (star) from XP */
+/** Get BedWars level (star) from XP — CORRECT */
 export function getBedwarsLevel(xp: number): number {
-  const levels = [0, 500, 1000, 2000, 3500, 5000, 7000, 9000, 11000, 13000, 15000];
-  const prestigenXp = 96 * 5000 + levels.reduce((a, b) => a + b, 0);
+  const EASY_LEVELS = [500, 1000, 2000, 3500]; // levels 0→4
+  const EASY_TOTAL = 7000;
+  const XP_PER_LEVEL = 5000;
+  const XP_PER_PRESTIGE = 487000; // 100 levels total
 
+  let remaining = Math.max(0, xp);
   let level = 0;
-  let remainingXp = xp;
 
-  while (remainingXp >= prestigenXp) {
-    level += 100;
-    remainingXp -= prestigenXp;
+  // Handle prestiges (each 100 levels)
+  const prestiges = Math.floor(remaining / XP_PER_PRESTIGE);
+  level += prestiges * 100;
+  remaining -= prestiges * XP_PER_PRESTIGE;
+
+  // Handle first 4 levels
+  for (let i = 0; i < EASY_LEVELS.length; i++) {
+    if (remaining < EASY_LEVELS[i]) return level + i;
+    remaining -= EASY_LEVELS[i];
   }
 
-  for (const levelXp of levels) {
-    if (remainingXp >= levelXp) {
-      remainingXp -= levelXp;
-      level++;
-    } else {
-      break;
-    }
-  }
+  level += 4;
 
-  while (remainingXp >= 5000) {
-    remainingXp -= 5000;
-    level++;
-  }
+  // Handle remaining levels (constant XP)
+  level += Math.floor(remaining / XP_PER_LEVEL);
 
   return level;
+}
+
+/** Optional: BedWars progress (useful for UI bars) */
+export function getBedwarsProgress(xp: number) {
+  const EASY_LEVELS = [500, 1000, 2000, 3500];
+  const EASY_TOTAL = 7000;
+  const XP_PER_LEVEL = 5000;
+  const XP_PER_PRESTIGE = 487000;
+
+  let remaining = Math.max(0, xp);
+
+  // Remove prestiges
+  remaining = remaining % XP_PER_PRESTIGE;
+
+  // Early levels
+  for (let i = 0; i < EASY_LEVELS.length; i++) {
+    if (remaining < EASY_LEVELS[i]) {
+      return {
+        level: i,
+        progress: remaining,
+        needed: EASY_LEVELS[i],
+      };
+    }
+    remaining -= EASY_LEVELS[i];
+  }
+
+  // After level 4
+  return {
+    level: 4 + Math.floor(remaining / XP_PER_LEVEL),
+    progress: remaining % XP_PER_LEVEL,
+    needed: XP_PER_LEVEL,
+  };
+}
+
+/**
+ * Calculate SkyWars level (star) from skywars_experience.
+ * The Hypixel API does NOT return a level field — only skywars_experience.
+ *
+ * Cumulative XP to reach each level (verified against Posey's table):
+ *   L1:0  L2:20  L3:70  L4:150  L5:250  L6:500
+ *   L7:1000  L8:2000  L9:3500  L10:6000  L11:10000  L12:15000
+ * Level 12+: flat 10,000 XP per level.
+ */
+export function getSkyWarsLevel(xp: number): number {
+  const xps = [0, 20, 70, 150, 250, 500, 1000, 2000, 3500, 6000, 10000, 15000];
+  if (xp >= 15000) {
+    return Math.floor((xp - 15000) / 10000 + 12);
+  }
+  for (let i = 0; i < xps.length; i++) {
+    if (xp < xps[i]) {
+      return i;
+    }
+  }
+  return 12;
+}
+
+/**
+ * Calculate exact (decimal) SkyWars level for progress bars.
+ * e.g. 4.5 means halfway through level 4 → 5.
+ */
+export function getSkyWarsLevelExact(xp: number): number {
+  const xps = [0, 20, 70, 150, 250, 500, 1000, 2000, 3500, 6000, 10000, 15000];
+  if (xp >= 15000) {
+    return (xp - 15000) / 10000 + 12;
+  }
+  for (let i = 0; i < xps.length; i++) {
+    if (xp < xps[i]) {
+      return i + (xp - xps[i - 1]) / (xps[i] - xps[i - 1]);
+    }
+  }
+  return 12;
 }
 
 /** Format date to readable string */
@@ -123,7 +197,6 @@ export function timeAgo(timestamp: number | undefined): string {
 
 /** Get player rank display info */
 export function getPlayerRank(player: HypixelPlayer): { label: string; color: string; gradient: string } {
-  // Priority: prefix > monthlyPackageRank > rank > newPackageRank
   if (player.rank === 'YOUTUBER') {
     return { label: 'YOUTUBE', color: '#FF0000', gradient: 'from-red-500 to-red-700' };
   }
@@ -137,9 +210,9 @@ export function getPlayerRank(player: HypixelPlayer): { label: string; color: st
   const rank = player.newPackageRank;
   switch (rank) {
     case 'MVP_PLUS':
-      return { label: 'MVP+', color: '#00AAAA', gradient: 'from-cyan-400 to-teal-500' };
+      return { label: 'MVP+', color: '#55FFFF', gradient: 'from-cyan-400 to-teal-500' };
     case 'MVP':
-      return { label: 'MVP', color: '#00AAAA', gradient: 'from-cyan-400 to-teal-500' };
+      return { label: 'MVP', color: '#55FFFF', gradient: 'from-cyan-400 to-teal-500' };
     case 'VIP_PLUS':
       return { label: 'VIP+', color: '#55FF55', gradient: 'from-green-400 to-emerald-500' };
     case 'VIP':
@@ -156,7 +229,7 @@ export function isValidUsername(username: string): boolean {
 
 /** Get Minecraft avatar URL */
 export function getAvatarUrl(uuid: string, size = 128): string {
-  return `https://crafatar.com/avatars/${uuid}?size=${size}&overlay=true`;
+  return `https://mc-heads.net/avatar/${uuid}/${size}`;
 }
 
 /** Get 3D render URL */
@@ -175,8 +248,8 @@ export function abbreviate(n: number | undefined): string {
 
 /** Pick a color based on value range (for stat indicators) */
 export function getStatColor(value: number, thresholds: [number, number, number]): string {
-  if (value >= thresholds[2]) return '#00ffd0'; // cyan - excellent
-  if (value >= thresholds[1]) return '#a855f7'; // purple - good
-  if (value >= thresholds[0]) return '#f59e0b'; // amber - average
-  return '#ef4444'; // red - below avg
+  if (value >= thresholds[2]) return '#00ffd0';
+  if (value >= thresholds[1]) return '#a855f7';
+  if (value >= thresholds[0]) return '#f59e0b';
+  return '#ef4444';
 }

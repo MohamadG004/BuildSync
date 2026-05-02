@@ -7,7 +7,6 @@ A premium, full-stack Next.js application for tracking Hypixel Minecraft server 
 - 🔍 **Player Search** — Search any Hypixel player by Minecraft username
 - 📊 **Detailed Stats** — BedWars, SkyWars, Duels, and Overall stats
 - 📈 **Data Visualization** — Charts powered by Recharts
-- ⭐ **Favorites System** — Save and track players with localStorage
 - 🎨 **Beautiful UI** — Glassmorphism, neon accents, smooth animations
 - 💀 **Loading Skeletons** — Professional loading states
 - 🔔 **Toast Notifications** — Contextual feedback
@@ -57,9 +56,6 @@ hypixel-stats/
 │   ├── player/[username]/
 │   │   ├── page.tsx                     # Player stats page (SSR metadata)
 │   │   └── PlayerPageClient.tsx         # Client-side player UI
-│   ├── favorites/
-│   │   ├── page.tsx                     # Favorites page
-│   │   └── FavoritesClient.tsx          # Favorites UI
 │   ├── layout.tsx                       # Root layout
 │   ├── page.tsx                         # Home page
 │   └── globals.css                      # Global styles
@@ -79,7 +75,6 @@ hypixel-stats/
 │       ├── SkyWarsStats.tsx            # SkyWars specific stats
 │       └── DuelsStats.tsx              # Duels specific stats
 ├── hooks/
-│   └── useFavorites.ts                 # Favorites localStorage hook
 ├── lib/
 │   ├── hypixel.ts                      # Hypixel/Mojang API clients
 │   └── utils.ts                        # Utility functions

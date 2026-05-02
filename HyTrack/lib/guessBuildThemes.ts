@@ -1,6 +1,3 @@
-// All Guess the Build themes sourced from translations-data.json
-// Aliases include the theme shortcut and any multiword aliases from the source data
-
 export interface GuessBuildTheme {
   theme: string;
   aliases?: string[];

@@ -39,10 +39,7 @@ export interface HypixelStats {
   Duels?: DuelsStats;
   BuildBattle?: BuildBattleStats;
   MurderMystery?: MurderMysteryStats;
-  Arcade?: ArcadeStats;
   TNTGames?: TNTGamesStats;
-  UHC?: UHCStats;
-  Pit?: PitStats;
 }
 
 export interface BedWarsStats {
@@ -81,7 +78,9 @@ export interface SkyWarsStats {
   games_played_skywars?: number;
   winstreak?: number;
   coins?: number;
-  level?: number;
+  // NOTE: The Hypixel API does NOT return a `level` field for SkyWars.
+  // Use `skywars_experience` and calculate the level with getSkyWarsLevel().
+  skywars_experience?: number;
   heads?: number;
   assists?: number;
   souls_gathered?: number;
@@ -149,23 +148,6 @@ export interface MurderMysteryStats {
   can_die_to_detective_bow?: boolean;
 }
 
-export interface ArcadeStats {
-  coins?: number;
-  // Galaxy Wars
-  wins_galaxy_wars?: number;
-  kills_galaxy_wars?: number;
-  // Party Games
-  wins_party_games_1?: number;
-  wins_party_games_2?: number;
-  wins_party_games_3?: number;
-  // Other games
-  wins_pixel_painters?: number;
-  wins_simon_says?: number;
-  wins_bounty_hunters?: number;
-  wins_mini_walls?: number;
-  zombie_kills_zombies?: number;
-}
-
 export interface TNTGamesStats {
   wins_tntrun?: number;
   deaths_tntrun?: number;
@@ -181,27 +163,6 @@ export interface TNTGamesStats {
   kills_tntag?: number;
   wins_tntag?: number;
   coins?: number;
-}
-
-export interface UHCStats {
-  wins?: number;
-  kills?: number;
-  deaths?: number;
-  coins?: number;
-  score?: number;
-  heads_eaten?: number;
-}
-
-export interface PitStats {
-  profile?: {
-    cash?: number;
-    xp?: number;
-    pit_stats_ptl?: {
-      kills?: number;
-      deaths?: number;
-      assists?: number;
-    };
-  };
 }
 
 export interface HypixelAPIResponse {
@@ -236,14 +197,4 @@ export interface ProcessedPlayer {
   stats: HypixelStats;
   online: boolean;
   socialMedia?: Record<string, string>;
-}
-
-export interface FavoritePlayer {
-  uuid: string;
-  username: string;
-  rank: string | null;
-  rankColor: string;
-  level: number;
-  addedAt: string;
-  lastChecked?: string;
 }

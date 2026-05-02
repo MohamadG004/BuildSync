@@ -11,7 +11,7 @@ const FEATURED_PLAYERS = ['Technoblade', 'Dream', 'Hypixel', 'Gamerboy80'];
 const FEATURES = [
   { icon: BarChart3, label: 'Detailed analytics', color: 'var(--accent)' },
   { icon: Zap, label: 'Live data', color: '#d97706' },
-  { icon: Shield, label: 'BedWars & SkyWars', color: '#7c3aed' },
+  { icon: Shield, label: 'All Stats', color: '#7c3aed' },
 ];
 
 export function HeroSection() {
@@ -78,7 +78,7 @@ export function HeroSection() {
           transition={{ delay: 0.15, duration: 0.5 }}
           className="mx-auto mb-10 max-w-lg text-center text-base leading-relaxed text-slate-500 sm:text-lg"
         >
-          Real-time BedWars, SkyWars, and Duels stats with charts, rankings, and clean performance breakdowns.
+          Real-time Hypixel stats with charts, rankings, and clean performance breakdowns.
         </motion.p>
 
         {/* Search */}
@@ -93,7 +93,7 @@ export function HeroSection() {
               <input
                 value={username}
                 onChange={e => { setUsername(e.target.value); setError(''); }}
-                placeholder="Enter Minecraft username…"
+                placeholder="Enter Minecraft Username…"
                 autoComplete="off"
                 spellCheck={false}
                 disabled={loading}
