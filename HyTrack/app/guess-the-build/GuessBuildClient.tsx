@@ -2,41 +2,65 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, X, SkipForward, RotateCcw, Trophy, Flame, ChevronRight } from 'lucide-react';
+import { Check, X, SkipForward, RotateCcw, ChevronRight } from 'lucide-react';
 import { GUESS_BUILD_THEMES, type GuessBuildTheme } from '@/lib/guessBuildThemes';
 import { cn } from '@/lib/utils';
 
-type Difficulty = 'easy' | 'medium' | 'hard';
+type Difficulty    = 'easy' | 'medium' | 'hard';
+type LengthFilter  = 'any' | 'short' | 'medium-len' | 'long';
 
 // ── Letter reveal logic ──────────────────────────────────────────────────────
 
-/** Returns a stable mask array for a given theme+difficulty using a seeded approach */
+/**
+ * Builds a boolean mask for which characters to reveal.
+ * Uses an exact count (not probabilistic) so the percentage is always accurate.
+ * Spaces are always `true` (visible separator tiles rendered separately).
+ */
 function buildMask(theme: string, difficulty: Difficulty, seed: number): boolean[] {
-  const revealPct = difficulty === 'easy' ? 0.65 : difficulty === 'medium' ? 0.25 : 0;
-  // Simple LCG seeded random for deterministic masks
+  const revealPct =
+    difficulty === 'easy'   ? 0.65 :
+    difficulty === 'medium' ? 0.25 :
+    0; // hard → 0%
+
+  const chars = theme.split('');
+
+  // Indices of non-space characters
+  const letterIndices = chars.reduce<number[]>((acc, ch, i) => {
+    if (ch !== ' ') acc.push(i);
+    return acc;
+  }, []);
+
+  const revealCount = Math.round(letterIndices.length * revealPct);
+
+  // Seeded Fisher-Yates shuffle for deterministic but varied masks
   let state = seed;
   function rand() {
     state = (state * 1664525 + 1013904223) & 0xffffffff;
     return (state >>> 0) / 4294967296;
   }
-  return theme.split('').map(ch => {
-    if (ch === ' ') return true; // spaces always visible (shows word count)
-    return rand() < revealPct;
-  });
+  const shuffled = [...letterIndices];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
+  const revealSet = new Set(shuffled.slice(0, revealCount));
+  // Spaces → true so the caller can distinguish space tiles from hidden letter tiles
+  return chars.map((ch, i) => ch === ' ' ? true : revealSet.has(i));
 }
 
 // ── Theme display tile ────────────────────────────────────────────────────────
 
 interface ThemeDisplayProps {
-  theme: string;
-  mask: boolean[];
+  theme:  string;
+  mask:   boolean[];
   solved: boolean;
-  wrong: boolean;
+  wrong:  boolean;
 }
 
 function ThemeDisplay({ theme, mask, solved, wrong }: ThemeDisplayProps) {
   const chars = theme.split('');
-  // Scale tile size based on total non-space chars
+
   const nonSpaceCount = chars.filter(c => c !== ' ').length;
   const tileSize =
     nonSpaceCount <= 4  ? 'w-12 h-14 text-2xl'  :
@@ -58,12 +82,29 @@ function ThemeDisplay({ theme, mask, solved, wrong }: ThemeDisplayProps) {
     ? 'border-red-300 bg-red-50'
     : 'border-[var(--border-strong)] bg-[var(--surface-2)]';
 
+  const spaceLineColor = solved
+    ? 'bg-green-300'
+    : wrong
+    ? 'bg-red-200'
+    : 'bg-slate-300';
+
   return (
-    <div className="flex flex-wrap justify-center gap-x-1 gap-y-2">
+    <div className="flex flex-wrap justify-center gap-x-1 gap-y-2 items-center">
       {chars.map((ch, i) => {
+        // ── Space tile: visible separator ───────────────────────────────────
         if (ch === ' ') {
-          return <div key={i} className="w-3" aria-hidden />;
+          return (
+            <div
+              key={i}
+              className="flex flex-col items-center justify-center self-center mx-1"
+              aria-label="space"
+              title="word break"
+            >
+              <div className={cn('h-0.5 w-4 rounded-full', spaceLineColor)} />
+            </div>
+          );
         }
+
         const shown = mask[i] || solved;
         return (
           <div
@@ -82,26 +123,54 @@ function ThemeDisplay({ theme, mask, solved, wrong }: ThemeDisplayProps) {
   );
 }
 
-// ── Difficulty badge ──────────────────────────────────────────────────────────
+// ── Config objects ────────────────────────────────────────────────────────────
 
 const DIFFICULTY_CONFIG = {
-  easy:   { label: 'Easy',   pct: '60–70%', color: '#16a34a', bg: 'rgba(22,163,74,0.08)',   border: 'rgba(22,163,74,0.25)' },
-  medium: { label: 'Medium', pct: '20–30%', color: '#d97706', bg: 'rgba(217,119,6,0.08)',   border: 'rgba(217,119,6,0.25)' },
-  hard:   { label: 'Hard',   pct: '0%',     color: '#dc2626', bg: 'rgba(220,38,38,0.08)',   border: 'rgba(220,38,38,0.25)' },
+  easy:   { label: 'Easy',   pct: '65%',    color: '#16a34a', bg: 'rgba(22,163,74,0.08)',  border: 'rgba(22,163,74,0.25)' },
+  medium: { label: 'Medium', pct: '25%',    color: '#d97706', bg: 'rgba(217,119,6,0.08)',  border: 'rgba(217,119,6,0.25)' },
+  hard:   { label: 'Hard',   pct: '0%',     color: '#dc2626', bg: 'rgba(220,38,38,0.08)',  border: 'rgba(220,38,38,0.25)' },
 };
 
-// ── Pick a random theme (excluding current) ───────────────────────────────────
+const LENGTH_CONFIG: Record<LengthFilter, { label: string; min: number; max: number }> = {
+  any:        { label: 'Any',  min: 0,  max: Infinity },
+  short:      { label: '3–5',  min: 3,  max: 5 },
+  'medium-len': { label: '6–8',  min: 6,  max: 8 },
+  long:       { label: '9+',   min: 9,  max: Infinity },
+};
 
-function pickTheme(exclude?: GuessBuildTheme): { theme: GuessBuildTheme; seed: number } {
-  const pool = exclude
-    ? GUESS_BUILD_THEMES.filter((t: GuessBuildTheme) => t.theme !== exclude.theme)
-    : GUESS_BUILD_THEMES;
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function letterCount(theme: string) {
+  return theme.replace(/ /g, '').length;
+}
+
+function pickTheme(
+  exclude?: GuessBuildTheme,
+  lengthFilter: LengthFilter = 'any',
+): { theme: GuessBuildTheme; seed: number } {
+  const { min, max } = LENGTH_CONFIG[lengthFilter];
+
+  let pool = GUESS_BUILD_THEMES.filter((t: GuessBuildTheme) => {
+    if (exclude && t.theme === exclude.theme) return false;
+    const c = letterCount(t.theme);
+    return c >= min && c <= max;
+  });
+
+  // Fallback: if filter yields nothing (e.g., length filter too restrictive
+  // after also excluding current), relax the exclude constraint.
+  if (pool.length === 0) {
+    pool = GUESS_BUILD_THEMES.filter((t: GuessBuildTheme) => {
+      const c = letterCount(t.theme);
+      return c >= min && c <= max;
+    });
+  }
+  // Ultimate fallback
+  if (pool.length === 0) pool = GUESS_BUILD_THEMES;
+
   const theme = pool[Math.floor(Math.random() * pool.length)];
   const seed  = Math.floor(Math.random() * 999999);
   return { theme, seed };
 }
-
-// ── Check answer ──────────────────────────────────────────────────────────────
 
 function isCorrect(guess: string, theme: GuessBuildTheme): boolean {
   const g = guess.trim().toLowerCase();
@@ -112,43 +181,45 @@ function isCorrect(guess: string, theme: GuessBuildTheme): boolean {
 // ── Main component ─────────────────────────────────────────────────────────────
 
 export function GuessBuildClient() {
-  const [difficulty, setDifficulty] = useState<Difficulty>('medium');
-  const [currentTheme, setCurrentTheme] = useState<GuessBuildTheme | null>(null);
-  const [seed, setSeed]                 = useState(0);
-  const [mask, setMask]                 = useState<boolean[]>([]);
-  const [guess, setGuess]               = useState('');
-  const [status, setStatus]             = useState<'idle' | 'correct' | 'wrong'>('idle');
-  const [score, setScore]               = useState(0);
-  const [streak, setStreak]             = useState(0);
-  const [skipped, setSkipped]           = useState(0);
-  const [totalGuesses, setTotalGuesses] = useState(0);
-  const [showAnswer, setShowAnswer]     = useState(false);
+  const [difficulty,    setDifficulty]    = useState<Difficulty>('medium');
+  const [lengthFilter,  setLengthFilter]  = useState<LengthFilter>('any');
+  const [currentTheme,  setCurrentTheme]  = useState<GuessBuildTheme | null>(null);
+  const [seed,          setSeed]          = useState(0);
+  const [mask,          setMask]          = useState<boolean[]>([]);
+  const [guess,         setGuess]         = useState('');
+  const [status,        setStatus]        = useState<'idle' | 'correct' | 'wrong'>('idle');
+  const [score,         setScore]         = useState(0);
+  const [streak,        setStreak]        = useState(0);
+  const [skipped,       setSkipped]       = useState(0);
+  const [totalGuesses,  setTotalGuesses]  = useState(0);
+  const [showAnswer,    setShowAnswer]    = useState(false);
 
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef     = useRef<HTMLInputElement>(null);
   const nextTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const loadTheme = useCallback((exclude?: GuessBuildTheme | null, diff: Difficulty = difficulty) => {
-    const { theme, seed: s } = pickTheme(exclude ?? undefined);
-    setCurrentTheme(theme);
-    setSeed(s);
-    setMask(buildMask(theme.theme, diff, s));
-    setGuess('');
-    setStatus('idle');
-    setShowAnswer(false);
-    setTimeout(() => inputRef.current?.focus(), 50);
-  }, [difficulty]);
+  const loadTheme = useCallback(
+    (exclude?: GuessBuildTheme | null, diff: Difficulty = difficulty, lenFilter: LengthFilter = lengthFilter) => {
+      const { theme, seed: s } = pickTheme(exclude ?? undefined, lenFilter);
+      setCurrentTheme(theme);
+      setSeed(s);
+      setMask(buildMask(theme.theme, diff, s));
+      setGuess('');
+      setStatus('idle');
+      setShowAnswer(false);
+      setTimeout(() => inputRef.current?.focus(), 50);
+    },
+    [difficulty, lengthFilter],
+  );
 
   // Initial load
-  useEffect(() => {
-    loadTheme();
-  }, []);                                              // only on mount
+  useEffect(() => { loadTheme(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // When difficulty changes, rebuild mask for current theme
+  // Rebuild mask when difficulty changes (keep same theme)
   useEffect(() => {
     if (currentTheme) {
       setMask(buildMask(currentTheme.theme, difficulty, seed));
     }
-  }, [difficulty]);
+  }, [difficulty]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -177,9 +248,7 @@ export function GuessBuildClient() {
     loadTheme(currentTheme);
   }
 
-  function handleReveal() {
-    setShowAnswer(true);
-  }
+  function handleReveal() { setShowAnswer(true); }
 
   function handleReset() {
     if (nextTimerRef.current) clearTimeout(nextTimerRef.current);
@@ -187,15 +256,27 @@ export function GuessBuildClient() {
     setStreak(0);
     setSkipped(0);
     setTotalGuesses(0);
-    loadTheme(undefined, difficulty);
+    loadTheme(undefined, difficulty, lengthFilter);
   }
 
   function handleDifficulty(d: Difficulty) {
     setDifficulty(d);
-    // mask rebuild is handled via useEffect
+    // mask rebuilt via useEffect
+  }
+
+  function handleLengthFilter(lf: LengthFilter) {
+    setLengthFilter(lf);
+    // Load a new theme immediately so the filter takes effect
+    loadTheme(undefined, difficulty, lf);
   }
 
   const config = DIFFICULTY_CONFIG[difficulty];
+
+  // Count how many themes match the active length filter
+  const { min, max } = LENGTH_CONFIG[lengthFilter];
+  const filteredCount = lengthFilter === 'any'
+    ? GUESS_BUILD_THEMES.length
+    : GUESS_BUILD_THEMES.filter(t => { const c = letterCount(t.theme); return c >= min && c <= max; }).length;
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
@@ -206,7 +287,7 @@ export function GuessBuildClient() {
           Guess the Build
         </h1>
         <p className="mt-1 text-sm text-slate-400">
-          Type the Build Battle theme before time runs out — just like the real game.
+          Type the Build Battle theme — just like the real game.
         </p>
       </motion.div>
 
@@ -215,7 +296,7 @@ export function GuessBuildClient() {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.05 }}
-        className="mb-6 flex items-center justify-center gap-2"
+        className="mb-3 flex items-center justify-center gap-2"
       >
         <span className="text-xs font-medium text-slate-400 mr-1">Difficulty:</span>
         {(['easy', 'medium', 'hard'] as Difficulty[]).map(d => {
@@ -229,12 +310,39 @@ export function GuessBuildClient() {
                 'rounded-lg px-3 py-1.5 text-xs font-semibold border transition-all',
                 active
                   ? 'text-white'
-                  : 'text-slate-500 bg-white border-[var(--border)] hover:border-slate-300'
+                  : 'text-slate-500 bg-white border-[var(--border)] hover:border-slate-300',
               )}
               style={active ? { background: cfg.color, borderColor: cfg.color, color: '#fff' } : {}}
             >
               {cfg.label}
               <span className="ml-1 opacity-70 font-normal">{cfg.pct}</span>
+            </button>
+          );
+        })}
+      </motion.div>
+
+      {/* Word-length filter */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.08 }}
+        className="mb-6 flex items-center justify-center gap-2"
+      >
+        <span className="text-xs font-medium text-slate-400 mr-1">Letters:</span>
+        {(['any', 'short', 'medium-len', 'long'] as LengthFilter[]).map(lf => {
+          const active = lengthFilter === lf;
+          return (
+            <button
+              key={lf}
+              onClick={() => handleLengthFilter(lf)}
+              className={cn(
+                'rounded-lg px-3 py-1.5 text-xs font-semibold border transition-all',
+                active
+                  ? 'bg-slate-800 border-slate-800 text-white'
+                  : 'text-slate-500 bg-white border-[var(--border)] hover:border-slate-300',
+              )}
+            >
+              {LENGTH_CONFIG[lf].label}
             </button>
           );
         })}
@@ -288,7 +396,7 @@ export function GuessBuildClient() {
             {config.label}
           </div>
 
-          {/* Theme length hint */}
+          {/* Theme letter-count hint */}
           {currentTheme && (
             <p className="absolute top-4 left-4 text-xs text-slate-400 font-mono">
               {currentTheme.theme.split(' ').map((w: string) => w.length).join(' + ')} letters
@@ -298,7 +406,7 @@ export function GuessBuildClient() {
           {/* Letter tiles */}
           {currentTheme ? (
             <ThemeDisplay
-              theme={showAnswer ? currentTheme.theme : currentTheme.theme}
+              theme={currentTheme.theme}
               mask={showAnswer ? currentTheme.theme.split('').map(() => true) : mask}
               solved={status === 'correct'}
               wrong={status === 'wrong'}
@@ -359,7 +467,7 @@ export function GuessBuildClient() {
                   ? 'border-red-300 bg-red-50 focus:border-red-400 focus:ring-red-100'
                   : status === 'correct'
                   ? 'border-[var(--green)] bg-[rgba(22,163,74,0.05)]'
-                  : 'border-[var(--border)] bg-[var(--surface-2)] focus:border-[var(--accent-border)] focus:bg-white focus:ring-[var(--accent-soft)]'
+                  : 'border-[var(--border)] bg-[var(--surface-2)] focus:border-[var(--accent-border)] focus:bg-white focus:ring-[var(--accent-soft)]',
               )}
             />
             <button
@@ -408,33 +516,34 @@ export function GuessBuildClient() {
               className="mt-0.5 h-5 w-5 shrink-0 rounded text-white flex items-center justify-center text-[10px] font-bold"
               style={{ background: DIFFICULTY_CONFIG.easy.color }}
             >E</span>
-            <span><strong className="text-slate-700">Easy</strong> — 60–70% of letters are revealed. Great for warming up.</span>
+            <span><strong className="text-slate-700">Easy</strong> — exactly 65% of letters revealed. Great for warming up.</span>
           </div>
           <div className="flex gap-2">
             <span
               className="mt-0.5 h-5 w-5 shrink-0 rounded text-white flex items-center justify-center text-[10px] font-bold"
               style={{ background: DIFFICULTY_CONFIG.medium.color }}
             >M</span>
-            <span><strong className="text-slate-700">Medium</strong> — 20–30% revealed. Mimics the real game challenge.</span>
+            <span><strong className="text-slate-700">Medium</strong> — exactly 25% revealed. Mimics the real game challenge.</span>
           </div>
           <div className="flex gap-2">
             <span
               className="mt-0.5 h-5 w-5 shrink-0 rounded text-white flex items-center justify-center text-[10px] font-bold"
               style={{ background: DIFFICULTY_CONFIG.hard.color }}
             >H</span>
-            <span><strong className="text-slate-700">Hard</strong> — No letters revealed. Pure memory and instinct.</span>
+            <span><strong className="text-slate-700">Hard</strong> — no letters revealed. Pure memory and instinct.</span>
           </div>
         </div>
         <p className="mt-3 text-xs text-slate-400">
-          Shortcuts count! Try typing <code className="rounded bg-slate-100 px-1 py-0.5">TV</code> for Television
-          or <code className="rounded bg-slate-100 px-1 py-0.5">UFO</code> for Unidentified Flying Object.
+          The <span className="mx-1 inline-block w-4 h-0.5 rounded-full bg-slate-300 align-middle" /> bar between tiles marks a word break.
+          Shortcuts count! Try <code className="rounded bg-slate-100 px-1 py-0.5">TV</code> for Television.
           Answers are case-insensitive.
         </p>
       </motion.div>
 
       {/* Theme count info */}
       <p className="mt-4 text-center text-xs text-slate-300">
-        {GUESS_BUILD_THEMES.length} themes available
+        {filteredCount} {lengthFilter !== 'any' ? 'matching' : ''} theme{filteredCount !== 1 ? 's' : ''} available
+        {lengthFilter !== 'any' && <span className="ml-1">(of {GUESS_BUILD_THEMES.length} total)</span>}
       </p>
     </div>
   );
