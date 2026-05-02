@@ -237,13 +237,3 @@ export interface ProcessedPlayer {
   online: boolean;
   socialMedia?: Record<string, string>;
 }
-
-export interface FavoritePlayer {
-  uuid: string;
-  username: string;
-  rank: string | null;
-  rankColor: string;
-  level: number;
-  addedAt: string;
-  lastChecked?: string;
-}

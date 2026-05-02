@@ -4,12 +4,11 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Star, Home, Menu, X, Activity, Hammer } from 'lucide-react';
+import { Search, Home, Menu, X, Activity, Hammer } from 'lucide-react';
 import { cn, isValidUsername } from '@/lib/utils';
 
 const NAV_LINKS = [
   { href: '/',                 label: 'Home',            icon: Home   },
-  { href: '/favorites',        label: 'Favorites',       icon: Star   },
   { href: '/guess-the-build',  label: 'Guess the Build', icon: Hammer },
 ];
 
