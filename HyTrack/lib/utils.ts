@@ -133,7 +133,11 @@ export function getBedwarsProgress(xp: number) {
 /**
  * Calculate SkyWars level (star) from skywars_experience.
  * The Hypixel API does NOT return a level field — only skywars_experience.
- * Levels 1–11 use a piecewise XP table; level 12+ uses a linear formula.
+ *
+ * Cumulative XP to reach each level (verified against Posey's table):
+ *   L1:0  L2:20  L3:70  L4:150  L5:250  L6:500
+ *   L7:1000  L8:2000  L9:3500  L10:6000  L11:10000  L12:15000
+ * Level 12+: flat 10,000 XP per level.
  */
 export function getSkyWarsLevel(xp: number): number {
   const xps = [0, 20, 70, 150, 250, 500, 1000, 2000, 3500, 6000, 10000, 15000];
@@ -142,7 +146,7 @@ export function getSkyWarsLevel(xp: number): number {
   }
   for (let i = 0; i < xps.length; i++) {
     if (xp < xps[i]) {
-      return i; // whole star count
+      return i;
     }
   }
   return 12;
