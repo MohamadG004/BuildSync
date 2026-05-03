@@ -1,108 +1,63 @@
-# BuildSync - Hypixel Player Statistics Tracker
+# 🚀 BuildSync - Hypixel Player Statistics Tracker
 
-A premium, full-stack Next.js application for tracking Hypixel Minecraft server player statistics. Built with a **cyber-noir gaming terminal** aesthetic.
+A premium, full-stack player statistics tracking platform designed to help users search, analyze, and visualize Hypixel Minecraft data with real-time insights and a modern, clean interface.
+
+## 🔗 Live Demo
+
+🌐 **Try the app:**  
+https://build-sync-gtb.vercel.app
+
+---
 
 ## ✨ Features
 
-- 🔍 **Player Search** — Search any Hypixel player by Minecraft username
-- 📊 **Detailed Stats** — BedWars, SkyWars, Duels, and Overall stats
-- 📈 **Data Visualization** — Charts powered by Recharts
-- 🎨 **Beautiful UI** — Glassmorphism, neon accents, smooth animations
-- 💀 **Loading Skeletons** — Professional loading states
-- 🔔 **Toast Notifications** — Contextual feedback
-- 📱 **Fully Responsive** — Mobile + desktop
+* 🔍 **Search any Hypixel player by username**
+* 📊 **Detailed statistics** (BedWars, SkyWars, Duels, Build Battle, Murder Mystery, TNT Games, Overall)
+* 📈 **Interactive data visualization** with charts
+* 🎨 **Clean, modern UI** with responsive design
+* 💀 **Loading skeleton states** for better UX
+* 🔔 **Toast notifications**
+* 📱 **Fully responsive design across devices**
 
-## 🚀 Getting Started
+---
 
-### 1. Prerequisites
+## 🛠️ Tech Stack
 
-- Node.js 18+
-- A Hypixel API key (join Hypixel and type `/api new` in chat)
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat&logo=nextdotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)
+![Recharts](https://img.shields.io/badge/Recharts-FF6384?style=flat&logo=chartdotjs&logoColor=white)
+![Hypixel API](https://img.shields.io/badge/Hypixel_API-FFAA00?style=flat&logo=serverless&logoColor=black)
+![Mojang API](https://img.shields.io/badge/Mojang_API-8B0000?style=flat&logo=minecraft&logoColor=white)
 
-### 2. Install dependencies
+* ⚛️ Next.js
+* 🟦 TypeScript
+* 🎨 Tailwind CSS
+* 📊 Recharts
+* 🌐 Hypixel API
+* 🧠 Mojang API
+* 🪝 Custom React Hooks
+* 🌐 Context API
 
-```bash
-npm install
-```
+---
 
-### 3. Configure environment variables
+## 🌟 Highlights
 
-```bash
-cp .env.local.example .env.local
-```
+* 📊 **Real-time Hypixel player statistics**
+* ⚡ **Fast SSR data fetching with Next.js**
+* 🎨 **Clean and modern design system**
+* 🚀 **Optimized API handling with caching**
+* 🧩 **Modular and scalable architecture**
 
-Edit `.env.local` and add your Hypixel API key:
+---
 
-```env
-HYPIXEL_API_KEY=your-api-key-here
-```
+## 🧠 Architecture Notes
 
-### 4. Run the development server
+* Component-driven UI with reusable patterns  
+* Separation of concerns between UI, logic, and API layers  
+* Hybrid server + client rendering strategy  
+* Efficient caching for API requests  
 
-```bash
-npm run dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000).
-
-## 🏗️ Project Structure
-
-```
-hypixel-stats/
-├── app/
-│   ├── api/
-│   │   ├── player/[username]/route.ts   # Main player data API
-│   │   └── uuid/[username]/route.ts     # UUID lookup API
-│   ├── player/[username]/
-│   │   ├── page.tsx                     # Player stats page (SSR metadata)
-│   │   └── PlayerPageClient.tsx         # Client-side player UI
-│   ├── layout.tsx                       # Root layout
-│   ├── page.tsx                         # Home page
-│   └── globals.css                      # Global styles
-├── components/
-│   ├── layout/
-│   │   ├── Navbar.tsx                   # Navigation bar
-│   │   └── Providers.tsx               # React context providers
-│   ├── ui/
-│   │   ├── StatCard.tsx                # Stat card components
-│   │   └── LoadingSkeleton.tsx         # Loading skeleton UIs
-│   ├── home/
-│   │   └── HeroSection.tsx             # Landing page hero
-│   └── player/
-│       ├── PlayerHeader.tsx            # Player profile header
-│       ├── OverallStats.tsx            # Cross-game overview
-│       ├── BedWarsStats.tsx            # BedWars specific stats
-│       ├── SkyWarsStats.tsx            # SkyWars specific stats
-│       └── DuelsStats.tsx              # Duels specific stats
-├── hooks/
-├── lib/
-│   ├── hypixel.ts                      # Hypixel/Mojang API clients
-│   └── utils.ts                        # Utility functions
-├── types/
-│   └── hypixel.ts                      # TypeScript type definitions
-└── .env.local.example                  # Environment variable template
-```
-
-## 🎨 Design System
-
-**Theme**: Cyber-noir gaming terminal
-- **Background**: Deep void (`#050810`) with subtle cyan grid overlay
-- **Primary**: Neon cyan (`#00ffd0`) 
-- **Secondary**: Electric purple (`#a855f7`)
-- **Accent**: Amber (`#f59e0b`)
-- **Cards**: Glassmorphism with blur + translucent backgrounds
-- **Fonts**: Orbitron (display) + Space Grotesk (body) + JetBrains Mono (data)
-
-## 🌐 Deployment on Vercel
-
-1. Push to GitHub
-2. Import project in [Vercel](https://vercel.com)
-3. Add `HYPIXEL_API_KEY` to Environment Variables
-4. Deploy!
-
-## ⚡ Rate Limits
-
-The Hypixel API has rate limits. The app handles them gracefully with:
-- Server-side caching (60 seconds per player)
-- User-friendly error messages
-- Retry functionality
+✨ Built to track, analyze, and visualize Hypixel player data while showcasing modern full-stack development and UI design.
