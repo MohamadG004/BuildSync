@@ -1,4 +1,4 @@
-# HyTrack - Hypixel Player Statistics Tracker
+# BuildSync - Hypixel Player Statistics Tracker
 
 A premium, full-stack Next.js application for tracking Hypixel Minecraft server player statistics. Built with a **cyber-noir gaming terminal** aesthetic.
 

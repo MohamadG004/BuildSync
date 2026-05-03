@@ -37,7 +37,7 @@ export function Navbar() {
             <Activity size={15} className="text-white" strokeWidth={2.5} />
           </div>
           <span className="font-display text-base font-bold tracking-tight text-slate-900">
-            Hy<span className="text-[var(--accent)]">Track</span>
+            Build<span className="text-[var(--accent)]">Sync</span>
           </span>
         </Link>
 
