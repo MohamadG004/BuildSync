@@ -21,7 +21,11 @@ export async function GET(
 
   try {
     const profile = await fetchUUID(username);
-    return NextResponse.json(profile);
+    return NextResponse.json(profile, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+      },
+    });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Failed to fetch UUID';
     const status = message.includes('not found') ? 404 : 500;

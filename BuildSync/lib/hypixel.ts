@@ -29,7 +29,7 @@ export async function fetchUUID(username: string): Promise<MojangProfile> {
 
 /**
  * Fetch a player's full stats from Hypixel API.
- * Uses the API key from server-side environment variable.
+ * Uses the API key from a server-side environment variable and never exposes it to browser clients.
  */
 export async function fetchHypixelPlayer(uuid: string): Promise<HypixelAPIResponse> {
   const apiKey = process.env.HYPIXEL_API_KEY;
@@ -41,7 +41,7 @@ export async function fetchHypixelPlayer(uuid: string): Promise<HypixelAPIRespon
   const res = await fetch(
     `${HYPIXEL_BASE}/player?uuid=${uuid}&key=${apiKey}`,
     {
-      next: { revalidate: 60 }, // cache 60 seconds
+      next: { revalidate: 300 }, // cache 5 minutes to reduce repeated requests
     }
   );
 

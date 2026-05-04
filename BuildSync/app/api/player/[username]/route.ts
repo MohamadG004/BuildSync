@@ -59,8 +59,8 @@ export async function GET(
 
     return NextResponse.json(enriched, {
       headers: {
-        // Client-side cache for 60 seconds
-        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+        // Cache player lookups for 5 minutes on the CDN / edge layer
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
       },
     });
   } catch (err) {

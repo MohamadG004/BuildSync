@@ -1,6 +1,8 @@
 # 🚀 BuildSync - Hypixel Player Statistics Tracker
 
-A premium, full-stack player statistics tracking platform designed to help users search, analyze, and visualize Hypixel Minecraft data with real-time insights and a modern, clean interface.
+A premium, full-stack player statistics tracking platform designed to help users search, analyze, and visualize Hypixel Minecraft data with near real-time insights and a modern, clean interface.
+
+> **Note:** BuildSync is not affiliated with or endorsed by Hypixel.
 
 ## 🔗 Live Demo
 
@@ -43,11 +45,20 @@ https://build-sync-gtb.vercel.app
 
 ## 🌟 Highlights
 
-* 📊 **Real-time Hypixel player statistics**
+* 📊 **Near real-time Hypixel player statistics**
 * ⚡ **Fast SSR data fetching with Next.js**
 * 🎨 **Clean and modern design system**
-* 🚀 **Optimized API handling with caching**
+* 🚀 **Optimized API handling with caching and rate-limit-friendly behavior**
 * 🧩 **Modular and scalable architecture**
+
+---
+
+## 🛡️ Hypixel API Compliance
+
+* Uses the Hypixel Public API via server-side requests only
+* Keeps the API key secret and never exposes it to browsers
+* Uses caching to reduce repeated API calls for the same player
+* Not affiliated with, endorsed by, or officially connected to Hypixel
 
 ---
 
