@@ -2,29 +2,29 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, X, SkipForward, RotateCcw, ChevronRight } from 'lucide-react';
+import { Check, X, SkipForward, RotateCcw, ChevronRight, ChevronDown, ChevronUp, Eye } from 'lucide-react';
 import { GUESS_BUILD_THEMES, type GuessBuildTheme } from '@/lib/guessBuildThemes';
 import { cn } from '@/lib/utils';
 
 type Difficulty    = 'easy' | 'medium' | 'hard';
 type LengthFilter  = 'any' | 'short' | 'medium-len' | 'long';
+type RoundResult   = 'correct' | 'skipped' | 'revealed';
+
+interface HistoryEntry {
+  theme:   GuessBuildTheme;
+  result:  RoundResult;
+  guess?:  string;
+}
 
 // ── Letter reveal logic ──────────────────────────────────────────────────────
 
-/**
- * Builds a boolean mask for which characters to reveal.
- * Uses an exact count (not probabilistic) so the percentage is always accurate.
- * Spaces are always `true` (visible separator tiles rendered separately).
- */
 function buildMask(theme: string, difficulty: Difficulty, seed: number): boolean[] {
   const revealPct =
     difficulty === 'easy'   ? 0.65 :
     difficulty === 'medium' ? 0.25 :
-    0; // hard → 0%
+    0;
 
   const chars = theme.split('');
-
-  // Indices of non-space characters
   const letterIndices = chars.reduce<number[]>((acc, ch, i) => {
     if (ch !== ' ') acc.push(i);
     return acc;
@@ -32,7 +32,6 @@ function buildMask(theme: string, difficulty: Difficulty, seed: number): boolean
 
   const revealCount = Math.round(letterIndices.length * revealPct);
 
-  // Seeded Fisher-Yates shuffle for deterministic but varied masks
   let state = seed;
   function rand() {
     state = (state * 1664525 + 1013904223) & 0xffffffff;
@@ -45,7 +44,6 @@ function buildMask(theme: string, difficulty: Difficulty, seed: number): boolean
   }
 
   const revealSet = new Set(shuffled.slice(0, revealCount));
-  // Spaces → true so the caller can distinguish space tiles from hidden letter tiles
   return chars.map((ch, i) => ch === ' ' ? true : revealSet.has(i));
 }
 
@@ -85,11 +83,7 @@ function ThemeDisplay({ theme, mask, solved, wrong }: ThemeDisplayProps) {
   return (
     <div className="flex flex-wrap justify-center gap-x-1 gap-y-2 items-center">
       {chars.map((ch, i) => {
-        // ── Space: plain gap between words ──────────────────────────────────
-        if (ch === ' ') {
-          return <div key={i} className="w-3" aria-hidden />;
-        }
-
+        if (ch === ' ') return <div key={i} className="w-3" aria-hidden />;
         const shown = mask[i] || solved;
         return (
           <div
@@ -97,7 +91,7 @@ function ThemeDisplay({ theme, mask, solved, wrong }: ThemeDisplayProps) {
             className={cn(
               'flex items-center justify-center rounded-lg border font-mono font-bold uppercase transition-all',
               tileSize,
-              shown ? baseColor : blankColor
+              shown ? baseColor : blankColor,
             )}
           >
             {shown ? ch : ''}
@@ -111,16 +105,22 @@ function ThemeDisplay({ theme, mask, solved, wrong }: ThemeDisplayProps) {
 // ── Config objects ────────────────────────────────────────────────────────────
 
 const DIFFICULTY_CONFIG = {
-  easy:   { label: 'Easy',   pct: '65%',    color: '#16a34a', bg: 'rgba(22,163,74,0.08)',  border: 'rgba(22,163,74,0.25)' },
-  medium: { label: 'Medium', pct: '25%',    color: '#d97706', bg: 'rgba(217,119,6,0.08)',  border: 'rgba(217,119,6,0.25)' },
-  hard:   { label: 'Hard',   pct: '0%',     color: '#dc2626', bg: 'rgba(220,38,38,0.08)',  border: 'rgba(220,38,38,0.25)' },
+  easy:   { label: 'Easy', color: '#16a34a', bg: 'rgba(22,163,74,0.08)',  border: 'rgba(22,163,74,0.25)' },
+  medium: { label: 'Medium', color: '#d97706', bg: 'rgba(217,119,6,0.08)',  border: 'rgba(217,119,6,0.25)' },
+  hard:   { label: 'Hard',  color: '#dc2626', bg: 'rgba(220,38,38,0.08)',  border: 'rgba(220,38,38,0.25)' },
 };
 
 const LENGTH_CONFIG: Record<LengthFilter, { label: string; min: number; max: number }> = {
-  any:        { label: 'Any',  min: 0,  max: Infinity },
-  short:      { label: '3–5',  min: 3,  max: 5 },
-  'medium-len': { label: '6–8',  min: 6,  max: 8 },
-  long:       { label: '9+',   min: 9,  max: Infinity },
+  any:          { label: 'Any', min: 0,  max: Infinity },
+  short:        { label: '3–5', min: 3,  max: 5 },
+  'medium-len': { label: '6–8', min: 6,  max: 8 },
+  long:         { label: '9+',  min: 9,  max: Infinity },
+};
+
+const RESULT_CONFIG: Record<RoundResult, { label: string; color: string; bg: string; border: string }> = {
+  correct:  { label: '✓', color: '#16a34a', bg: 'rgba(22,163,74,0.08)',  border: 'rgba(22,163,74,0.3)' },
+  skipped:  { label: '→', color: '#64748b', bg: 'rgba(100,116,139,0.08)', border: 'rgba(100,116,139,0.3)' },
+  revealed: { label: '👁', color: '#d97706', bg: 'rgba(217,119,6,0.08)',  border: 'rgba(217,119,6,0.3)' },
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -141,15 +141,12 @@ function pickTheme(
     return c >= min && c <= max;
   });
 
-  // Fallback: if filter yields nothing (e.g., length filter too restrictive
-  // after also excluding current), relax the exclude constraint.
   if (pool.length === 0) {
     pool = GUESS_BUILD_THEMES.filter((t: GuessBuildTheme) => {
       const c = letterCount(t.theme);
       return c >= min && c <= max;
     });
   }
-  // Ultimate fallback
   if (pool.length === 0) pool = GUESS_BUILD_THEMES;
 
   const theme = pool[Math.floor(Math.random() * pool.length)];
@@ -171,6 +168,96 @@ function isCorrect(guess: string, theme: GuessBuildTheme): boolean {
   return (theme.aliases ?? []).some((a: string) => matches(a));
 }
 
+// ── History panel ─────────────────────────────────────────────────────────────
+
+function HistoryPanel({ history }: { history: HistoryEntry[] }) {
+  const [open, setOpen] = useState(false);
+
+  if (history.length === 0) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="mt-4 rounded-xl border border-[var(--border)] bg-white overflow-hidden"
+    >
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between px-5 py-3.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+      >
+        <span className="flex items-center gap-2">
+          Past themes
+          <span className="rounded-full bg-slate-100 text-slate-500 text-xs font-normal px-2 py-0.5">
+            {history.length}
+          </span>
+        </span>
+        {open ? <ChevronUp size={15} className="text-slate-400" /> : <ChevronDown size={15} className="text-slate-400" />}
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="border-t border-[var(--border)] divide-y divide-[var(--border)] max-h-72 overflow-y-auto">
+              {[...history].reverse().map((entry, i) => {
+                const cfg = RESULT_CONFIG[entry.result];
+                return (
+                  <div key={i} className="px-5 py-3 flex items-start gap-3">
+                    {/* Result badge */}
+                    <span
+                      className="mt-0.5 shrink-0 w-6 h-6 rounded-md flex items-center justify-center text-xs font-bold border"
+                      style={{ color: cfg.color, background: cfg.bg, borderColor: cfg.border }}
+                    >
+                      {cfg.label}
+                    </span>
+
+                    <div className="min-w-0 flex-1">
+                      {/* Theme name */}
+                      <p className="font-mono font-semibold text-sm text-slate-800 uppercase tracking-wide">
+                        {entry.theme.theme}
+                      </p>
+
+                      {/* Aliases */}
+                      {entry.theme.aliases && entry.theme.aliases.length > 0 && (
+                        <div className="mt-1 flex flex-wrap gap-1">
+                          {entry.theme.aliases.map(alias => (
+                            <span
+                              key={alias}
+                              className="rounded-md bg-slate-100 px-1.5 py-0.5 font-mono text-xs text-slate-500"
+                            >
+                              {alias}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* What the player guessed */}
+                      {entry.result === 'correct' && (
+                        <p className="mt-0.5 text-xs text-slate-400">Correct</p>
+                      )}
+                      {entry.result === 'skipped' && (
+                        <p className="mt-0.5 text-xs text-slate-400">Skipped</p>
+                      )}
+                      {entry.result === 'revealed' && (
+                        <p className="mt-0.5 text-xs text-amber-500">Auto Revealed</p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
 // ── Main component ─────────────────────────────────────────────────────────────
 
 export function GuessBuildClient() {
@@ -186,12 +273,17 @@ export function GuessBuildClient() {
   const [skipped,       setSkipped]       = useState(0);
   const [totalGuesses,  setTotalGuesses]  = useState(0);
   const [showAnswer,    setShowAnswer]    = useState(false);
+  const [history,       setHistory]       = useState<HistoryEntry[]>([]);
 
   const inputRef     = useRef<HTMLInputElement>(null);
   const nextTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const loadTheme = useCallback(
-    (exclude?: GuessBuildTheme | null, diff: Difficulty = difficulty, lenFilter: LengthFilter = lengthFilter) => {
+    (
+      exclude?: GuessBuildTheme | null,
+      diff: Difficulty = difficulty,
+      lenFilter: LengthFilter = lengthFilter,
+    ) => {
       const { theme, seed: s } = pickTheme(exclude ?? undefined, lenFilter);
       setCurrentTheme(theme);
       setSeed(s);
@@ -214,6 +306,10 @@ export function GuessBuildClient() {
     }
   }, [difficulty]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  function pushHistory(entry: HistoryEntry) {
+    setHistory(h => [...h, entry]);
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!currentTheme || status !== 'idle') return;
@@ -226,6 +322,7 @@ export function GuessBuildClient() {
       setStatus('correct');
       setScore(s => s + 1);
       setStreak(st => st + 1);
+      pushHistory({ theme: currentTheme, result: 'correct', guess: trimmed });
       nextTimerRef.current = setTimeout(() => loadTheme(currentTheme), 400);
     } else {
       setStatus('wrong');
@@ -236,6 +333,7 @@ export function GuessBuildClient() {
 
   function handleSkip() {
     if (nextTimerRef.current) clearTimeout(nextTimerRef.current);
+    if (currentTheme) pushHistory({ theme: currentTheme, result: 'skipped' });
     setSkipped(s => s + 1);
     setStreak(0);
     loadTheme(currentTheme);
@@ -243,29 +341,89 @@ export function GuessBuildClient() {
 
   function handleReveal() { setShowAnswer(true); }
 
+  // Tab key: reveal answer, autofill the input, and mark as revealed in history
+  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key !== 'Tab') return;
+    if (!currentTheme || status !== 'idle') return;
+    e.preventDefault();
+
+    setShowAnswer(true);
+    setGuess(currentTheme.theme);
+    // Mark as revealed so the player knows; they still need to press Guess
+    // (or they can skip). We flag the entry only once they move on.
+    // Store a ref so skip/load can record it.
+    pendingRevealRef.current = true;
+  }
+
+  // Track whether the current round was revealed via Tab
+  const pendingRevealRef = useRef(false);
+
+  // Reset the reveal flag whenever a new theme loads
+  useEffect(() => {
+    pendingRevealRef.current = false;
+  }, [currentTheme]);
+
   function handleReset() {
     if (nextTimerRef.current) clearTimeout(nextTimerRef.current);
     setScore(0);
     setStreak(0);
     setSkipped(0);
     setTotalGuesses(0);
+    setHistory([]);
     loadTheme(undefined, difficulty, lengthFilter);
   }
 
   function handleDifficulty(d: Difficulty) {
     setDifficulty(d);
-    // mask rebuilt via useEffect
   }
 
   function handleLengthFilter(lf: LengthFilter) {
     setLengthFilter(lf);
-    // Load a new theme immediately so the filter takes effect
     loadTheme(undefined, difficulty, lf);
   }
 
-  const config = DIFFICULTY_CONFIG[difficulty];
+  // Override submit to record 'revealed' result when the answer was tabbed in
+  function handleSubmitWrapped(e: React.FormEvent) {
+    e.preventDefault();
+    if (!currentTheme || status !== 'idle') return;
+    const trimmed = guess.trim();
+    if (!trimmed) return;
 
-  // Count how many themes match the active length filter
+    setTotalGuesses(t => t + 1);
+
+    if (isCorrect(trimmed, currentTheme)) {
+      setStatus('correct');
+      setScore(s => s + 1);
+      if (!pendingRevealRef.current) setStreak(st => st + 1);
+      else setStreak(0);
+      pushHistory({
+        theme: currentTheme,
+        result: pendingRevealRef.current ? 'revealed' : 'correct',
+        guess: trimmed,
+      });
+      nextTimerRef.current = setTimeout(() => loadTheme(currentTheme), 400);
+    } else {
+      setStatus('wrong');
+      setStreak(0);
+      setGuess('');
+    }
+  }
+
+  // Also record 'revealed' on skip if tab was pressed
+  function handleSkipWrapped() {
+    if (nextTimerRef.current) clearTimeout(nextTimerRef.current);
+    if (currentTheme) {
+      pushHistory({
+        theme: currentTheme,
+        result: pendingRevealRef.current ? 'revealed' : 'skipped',
+      });
+    }
+    setSkipped(s => s + 1);
+    setStreak(0);
+    loadTheme(currentTheme);
+  }
+
+  const config = DIFFICULTY_CONFIG[difficulty];
   const { min, max } = LENGTH_CONFIG[lengthFilter];
   const filteredCount = lengthFilter === 'any'
     ? GUESS_BUILD_THEMES.length
@@ -280,7 +438,7 @@ export function GuessBuildClient() {
           Guess the Build
         </h1>
         <p className="mt-1 text-sm text-slate-400">
-          Type the Build Battle theme - just like the real game.
+          Type the Guess The Build theme - Just like the real game!
         </p>
       </motion.div>
 
@@ -291,24 +449,35 @@ export function GuessBuildClient() {
         transition={{ delay: 0.05 }}
         className="mb-3 flex items-center justify-center gap-2"
       >
-        <span className="text-xs font-medium text-slate-400 mr-1">Difficulty:</span>
+        <span className="text-xs font-medium text-slate-400 mr-1">
+          Difficulty:
+        </span>
+
         {(['easy', 'medium', 'hard'] as Difficulty[]).map(d => {
           const cfg = DIFFICULTY_CONFIG[d];
           const active = difficulty === d;
+
           return (
             <button
               key={d}
               onClick={() => handleDifficulty(d)}
               className={cn(
-                'rounded-lg px-3 py-1.5 text-xs font-semibold border transition-all',
+                'rounded-lg px-3 py-1.5 text-xs font-semibold border transition-all flex items-center justify-center text-center leading-none',
                 active
                   ? 'text-white'
                   : 'text-slate-500 bg-white border-[var(--border)] hover:border-slate-300',
               )}
-              style={active ? { background: cfg.color, borderColor: cfg.color, color: '#fff' } : {}}
+              style={
+                active
+                  ? {
+                      background: cfg.color,
+                      borderColor: cfg.color,
+                      color: '#fff',
+                    }
+                  : {}
+              }
             >
               {cfg.label}
-              <span className="ml-1 opacity-70 font-normal">{cfg.pct}</span>
             </button>
           );
         })}
@@ -437,7 +606,7 @@ export function GuessBuildClient() {
 
         {/* Input area */}
         <div className="px-6 py-5">
-          <form onSubmit={handleSubmit} className="flex gap-2">
+          <form onSubmit={handleSubmitWrapped} className="flex gap-2">
             <input
               ref={inputRef}
               value={guess}
@@ -445,7 +614,8 @@ export function GuessBuildClient() {
                 setGuess(e.target.value);
                 if (status === 'wrong') setStatus('idle');
               }}
-              placeholder="Type your answer here"
+              onKeyDown={handleKeyDown}
+              placeholder="Type Your Answer Here&hellip;"
               disabled={status === 'correct'}
               autoComplete="off"
               autoCorrect="off"
@@ -458,6 +628,8 @@ export function GuessBuildClient() {
                   ? 'border-red-300 bg-red-50 focus:border-red-400 focus:ring-red-100'
                   : status === 'correct'
                   ? 'border-[var(--green)] bg-[rgba(22,163,74,0.05)]'
+                  : pendingRevealRef.current
+                  ? 'border-amber-300 bg-amber-50 focus:border-amber-400 focus:ring-amber-100'
                   : 'border-[var(--border)] bg-[var(--surface-2)] focus:border-[var(--accent-border)] focus:bg-white focus:ring-[var(--accent-soft)]',
               )}
             />
@@ -476,13 +648,14 @@ export function GuessBuildClient() {
             {!showAnswer && status !== 'correct' && (
               <button
                 onClick={handleReveal}
-                className="text-xs text-slate-400 hover:text-slate-600 transition-colors px-2 py-1 rounded hover:bg-slate-50"
+                className="flex items-center gap-1 text-xs text-slate-400 hover:text-slate-600 transition-colors px-2 py-1 rounded hover:bg-slate-50"
               >
+                <Eye size={11} />
                 Reveal answer
               </button>
             )}
             <button
-              onClick={handleSkip}
+              onClick={handleSkipWrapped}
               disabled={status === 'correct'}
               className="flex items-center gap-1.5 rounded-lg border border-[var(--border)] bg-white px-3 py-1.5 text-xs font-medium text-slate-500 transition hover:bg-slate-50 hover:text-slate-700 disabled:opacity-40"
             >
@@ -490,6 +663,13 @@ export function GuessBuildClient() {
               Skip
             </button>
           </div>
+
+          {/* Tab hint */}
+          {!showAnswer && status === 'idle' && (
+            <p className="mt-2 text-right text-[10px] text-slate-300 select-none">
+              Press <kbd className="rounded border border-slate-200 bg-slate-50 px-1 py-0.5 font-mono text-[10px] text-slate-400 mr-0.5">Tab</kbd> to reveal &amp; autofill
+            </p>
+          )}
 
           {/* Aliases shown after reveal */}
           <AnimatePresence>
@@ -558,8 +738,12 @@ export function GuessBuildClient() {
           Gaps between tiles mark word breaks.
           Shortcuts count!
           Answers are case-insensitive.
+          Press <kbd className="rounded border border-slate-200 bg-slate-50 px-1 py-0.5 font-mono text-[10px]">Tab</kbd> in the input to reveal and autofill the answer.
         </p>
       </motion.div>
+
+      {/* History panel */}
+      <HistoryPanel history={history} />
 
       {/* Theme count info */}
       <p className="mt-4 text-center text-xs text-slate-300">
