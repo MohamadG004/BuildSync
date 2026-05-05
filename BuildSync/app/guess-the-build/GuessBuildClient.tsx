@@ -418,7 +418,6 @@ export function GuessBuildClient() {
                 exit={{ opacity: 0 }}
                 className="mt-5 flex items-center gap-2 text-sm font-semibold text-[var(--green)]"
               >
-                <Check size={16} />
                 Correct!
               </motion.div>
             )}
@@ -430,8 +429,7 @@ export function GuessBuildClient() {
                 exit={{ opacity: 0 }}
                 className="mt-5 flex items-center gap-2 text-sm font-semibold text-red-500"
               >
-                <X size={16} />
-                Not quite - try again!
+                Not quite - Try again!
               </motion.div>
             )}
           </AnimatePresence>
