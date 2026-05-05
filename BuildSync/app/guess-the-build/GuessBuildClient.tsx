@@ -159,8 +159,16 @@ function pickTheme(
 
 function isCorrect(guess: string, theme: GuessBuildTheme): boolean {
   const g = guess.trim().toLowerCase();
-  if (g === theme.theme.toLowerCase()) return true;
-  return (theme.aliases ?? []).some((a: string) => a.toLowerCase() === g);
+
+  const matches = (answer: string) => {
+    const a = answer.toLowerCase();
+    if (g === a) return true;
+    if (a.includes(' ') && g === a.replace(/\s+/g, '')) return true;
+    return false;
+  };
+
+  if (matches(theme.theme)) return true;
+  return (theme.aliases ?? []).some((a: string) => matches(a));
 }
 
 // ── Main component ─────────────────────────────────────────────────────────────
