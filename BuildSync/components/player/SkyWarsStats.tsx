@@ -2,9 +2,6 @@
 
 import { motion } from 'framer-motion';
 import { Sword, Trophy, Target, Zap, ArrowRight, Star } from 'lucide-react';
-import {
-  RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, Tooltip
-} from 'recharts';
 import { StatCard } from '@/components/ui/StatCard';
 import { formatNumber, formatRatio, abbreviate, getStatColor, getSkyWarsLevel } from '@/lib/utils';
 import type { SkyWarsStats } from '@/types/hypixel';
@@ -71,38 +68,6 @@ export function SkyWarsStatsComponent({ stats }: { stats: SkyWarsStats }) {
           <StatCard key={card.label} {...card} delay={i * 0.05} />
         ))}
       </div>
-
-      {/* Radar chart */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.38 }}
-        className="rounded-2xl border border-[var(--border)] bg-white p-6"
-      >
-        <div className="mb-4">
-          <h3 className="text-sm font-semibold text-slate-900">Performance Radar</h3>
-          <p className="mt-0.5 text-xs text-slate-400">Normalized metrics (0–100)</p>
-        </div>
-        <ResponsiveContainer width="100%" height={280}>
-          <RadarChart data={radarData}>
-            {/* Light-mode grid strokes */}
-            <PolarGrid stroke="var(--chart-grid)" />
-            <PolarAngleAxis
-              dataKey="subject"
-              tick={{ fill: 'var(--chart-axis)', fontSize: 11, fontFamily: 'JetBrains Mono' }}
-            />
-            <Radar
-              name="Stats"
-              dataKey="A"
-              stroke="var(--purple)"
-              fill="var(--purple)"
-              fillOpacity={0.1}
-              strokeWidth={2}
-            />
-            <Tooltip content={<ChartTooltip />} />
-          </RadarChart>
-        </ResponsiveContainer>
-      </motion.div>
 
       {/* Misc stats */}
       <motion.div
