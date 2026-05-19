@@ -6,15 +6,6 @@ import { StatCard } from '@/components/ui/StatCard';
 import { formatNumber, formatRatio, abbreviate, getStatColor, getSkyWarsLevel } from '@/lib/utils';
 import type { SkyWarsStats } from '@/types/hypixel';
 
-function ChartTooltip({ active, payload }: any) {
-  if (!active || !payload?.length) return null;
-  return (
-    <div className="rounded-xl border border-[var(--border-strong)] bg-white px-3 py-2 text-xs shadow-md">
-      <p className="font-mono font-bold text-[var(--purple)]">{payload[0]?.value?.toFixed(1)}</p>
-    </div>
-  );
-}
-
 export function SkyWarsStatsComponent({ stats }: { stats: SkyWarsStats }) {
   const wins        = stats.wins ?? 0;
   const losses      = stats.losses ?? 0;
