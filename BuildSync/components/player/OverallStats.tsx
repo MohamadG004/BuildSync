@@ -61,6 +61,34 @@ export function OverallStats({ stats, level, karma, achievementPoints }: Overall
     { label: 'SkyWars Wins',     value: abbreviate(swWins),                   subValue: `KDR ${formatRatio(stats.SkyWars?.kills, stats.SkyWars?.deaths)}`, icon: TrendingUp, iconColor: '#34d399' },
   ];
 
+  // Build a list of known games and extract wins/losses/kills/plays where available.
+  // Use explicit `games_played` fields when present, otherwise fall back to wins+losses or wins as a proxy.
+  const bwPlays = stats.Bedwars?.games_played_bedwars ?? ((stats.Bedwars?.wins_bedwars ?? 0) + (stats.Bedwars?.losses_bedwars ?? 0));
+  const swPlays = stats.SkyWars?.games_played_skywars ?? ((stats.SkyWars?.wins ?? 0) + (stats.SkyWars?.losses ?? 0));
+  const duelsPlays = stats.Duels?.games_played_duels ?? ((stats.Duels?.wins ?? 0) + (stats.Duels?.losses ?? 0));
+  const bbPlays = stats.BuildBattle?.games_played ?? (stats.BuildBattle?.wins ?? 0);
+  const mmPlays = stats.MurderMystery?.games ?? (stats.MurderMystery?.wins ?? 0);
+  const tntStats = stats.TNTGames ?? {} as any;
+  const tntWins = (tntStats.wins_tntrun ?? 0) + (tntStats.wins_pvprun ?? 0) + (tntStats.wins_bowspleef ?? 0) + (tntStats.wins_capture ?? 0) + (tntStats.wins_tntag ?? 0);
+  const tntDeaths = (tntStats.deaths_tntrun ?? 0) + (tntStats.deaths_pvprun ?? 0) + (tntStats.deaths_bowspleef ?? 0) + (tntStats.deaths_capture ?? 0);
+  const tntKills = (tntStats.kills_pvprun ?? 0) + (tntStats.kills_capture ?? 0) + (tntStats.kills_tntag ?? 0);
+  const tntPlays = tntWins + tntDeaths;
+
+  const allGames = [
+    { game: 'BedWars', key: 'Bedwars', wins: bwWins,    losses: bwLosses,    kills: bwFinalKills, color: 'var(--accent)', plays: bwPlays },
+    { game: 'SkyWars', key: 'SkyWars', wins: swWins,    losses: swLosses,    kills: swKills,      color: 'var(--purple)', plays: swPlays },
+    { game: 'Duels',   key: 'Duels',   wins: duelsWins, losses: duelsLosses, kills: duelsKills,   color: 'var(--amber)', plays: duelsPlays },
+    { game: 'Build Battle', key: 'BuildBattle', wins: stats.BuildBattle?.wins ?? 0, losses: 0, kills: 0, color: '#60a5fa', plays: bbPlays },
+    { game: 'Murder Mystery', key: 'MurderMystery', wins: stats.MurderMystery?.wins ?? 0, losses: stats.MurderMystery?.deaths ?? 0, kills: stats.MurderMystery?.kills ?? 0, color: '#f97316', plays: mmPlays },
+    { game: 'TNT Games', key: 'TNTGames', wins: tntWins, losses: tntDeaths, kills: tntKills, color: '#ef4444', plays: tntPlays },
+  ];
+
+  // Sort by plays descending and take top 3. If all plays are zero, fall back to BedWars/SkyWars/Duels.
+  const sortedByPlays = allGames.slice().sort((a, b) => (b.plays ?? 0) - (a.plays ?? 0));
+  const topGames = (sortedByPlays.length && sortedByPlays[0].plays > 0)
+    ? sortedByPlays.slice(0, 3)
+    : [allGames[0], allGames[1], allGames[2]];
+
   return (
     <div className="space-y-5">
       {/* Stat grid */}
@@ -132,11 +160,7 @@ export function OverallStats({ stats, level, karma, achievementPoints }: Overall
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--border)]">
-              {[
-                { game: 'BedWars', wins: bwWins,    losses: bwLosses,    kills: bwFinalKills, color: 'var(--accent)' },
-                { game: 'SkyWars', wins: swWins,    losses: swLosses,    kills: swKills,      color: 'var(--purple)' },
-                { game: 'Duels',   wins: duelsWins, losses: duelsLosses, kills: duelsKills,   color: 'var(--amber)' },
-              ].map(row => (
+              {topGames.map(row => (
                 <tr key={row.game} className="hover:bg-[var(--surface-2)] transition-colors">
                   <td className="py-3 font-semibold" style={{ color: row.color }}>{row.game}</td>
                   <td className="py-3 font-mono text-slate-900">{formatNumber(row.wins)}</td>
