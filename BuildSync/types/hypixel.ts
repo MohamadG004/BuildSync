@@ -44,6 +44,7 @@ export interface HypixelStats {
 
 export interface BedWarsStats {
   Experience?: number;
+  coins?: number;
   wins_bedwars?: number;
   losses_bedwars?: number;
   kills_bedwars?: number;
