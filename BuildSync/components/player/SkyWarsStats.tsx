@@ -12,9 +12,6 @@ export function SkyWarsStatsComponent({ stats }: { stats: SkyWarsStats }) {
   const kills       = stats.kills ?? 0;
   const deaths      = stats.deaths ?? 0;
   const gamesPlayed = stats.games_played_skywars ?? 0;
-
-  // The Hypixel API does not return a level field for SkyWars —
-  // it must be calculated from skywars_experience using the piecewise XP table.
   const level = getSkyWarsLevel(stats.skywars_experience ?? 0);
 
   const kdr           = parseFloat(formatRatio(kills, deaths));
