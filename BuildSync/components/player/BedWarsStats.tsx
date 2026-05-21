@@ -64,7 +64,7 @@ export function BedWarsStatsComponent({ stats }: { stats: BedWarsStats }) {
         <div className="inline-flex items-center gap-2 rounded-xl border border-[var(--accent-border)] bg-[var(--accent-soft)] px-4 py-2">
           <span className="font-mono text-sm font-bold text-[var(--accent)]">✦ {bwLevel}★ BedWars</span>
         </div>
-        <span className="text-sm text-slate-400">{abbreviate(stats.Experience ?? 0)} XP · {formatNumber(coins)} coins</span>
+        <span className="text-sm text-slate-400">{formatNumber(coins)} coins</span>
       </motion.div>
 
       {/* Stat cards */}
