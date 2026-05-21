@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Sword, Shield, Skull, Bed, Trophy, Zap, Target, TrendingUp, Coins } from 'lucide-react';
+import { Sword, Skull, Bed, Trophy, Zap, Target, TrendingUp, Coins } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { StatCard } from '@/components/ui/StatCard';
 import { formatNumber, formatRatio, abbreviate, getBedwarsLevel, getStatColor } from '@/lib/utils';
