@@ -20,6 +20,11 @@ interface PlayerData {
   lastLogin: number;
   online: boolean;
   totalDailyRewards: number;
+  guild: {
+    name: string | null;
+    tag: string | null;
+    rank: string | null;
+  } | null;
 }
 
 export function PlayerHeader({ player }: { player: PlayerData }) {
@@ -96,6 +101,18 @@ export function PlayerHeader({ player }: { player: PlayerData }) {
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
             {player.displayname}
           </h1>
+
+          {player.guild?.name && (
+            <p className="mt-2 text-sm text-slate-500">
+              Guild{' '}
+              <span className="font-semibold text-slate-900">
+                {player.guild.tag ? `[${player.guild.tag}] ` : ''}{player.guild.name}
+              </span>
+              {player.guild.rank ? (
+                <span className="text-slate-400"> · {player.guild.rank}</span>
+              ) : null}
+            </p>
+          )}
 
           {/* Level bar */}
           <div className="mt-3 flex items-center gap-3">

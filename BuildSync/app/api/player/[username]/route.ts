@@ -2,7 +2,7 @@
 // Full player data: UUID + Hypixel stats, combined into one API call
 
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchUUID, fetchHypixelPlayer } from '@/lib/hypixel';
+import { fetchUUID, fetchHypixelGuild, fetchHypixelPlayer } from '@/lib/hypixel';
 import { isValidUsername, getPlayerRank, getNetworkLevel } from '@/lib/utils';
 
 export async function GET(
@@ -23,7 +23,12 @@ export async function GET(
     const profile = await fetchUUID(username);
 
     // Step 2: Get Hypixel stats
-    const { player } = await fetchHypixelPlayer(profile.id);
+    const [playerResponse, guildResponse] = await Promise.all([
+      fetchHypixelPlayer(profile.id),
+      fetchHypixelGuild(profile.id).catch(() => ({ success: true, guild: null })),
+    ]);
+
+    const { player } = playerResponse;
 
     if (!player) {
       return NextResponse.json(
@@ -31,6 +36,9 @@ export async function GET(
         { status: 404 }
       );
     }
+
+    const guild = guildResponse.guild;
+    const guildMember = guild?.members?.find(member => member.uuid === profile.id);
 
     // Step 3: Enrich data for the frontend
     const rankInfo = getPlayerRank(player);
@@ -55,6 +63,13 @@ export async function GET(
       stats: player.stats ?? {},
       // Online if logged in more recently than logged out
       online: (player.lastLogin ?? 0) > (player.lastLogout ?? 0),
+      guild: guild
+        ? {
+            name: guild.name,
+            tag: guild.tag ?? null,
+            rank: guildMember?.rank ?? null,
+          }
+        : null,
     };
 
     return NextResponse.json(enriched, {

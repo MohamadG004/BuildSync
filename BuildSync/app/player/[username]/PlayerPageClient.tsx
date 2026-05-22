@@ -50,6 +50,11 @@ interface PlayerData {
   lastLogin: number;
   online: boolean;
   totalDailyRewards: number;
+  guild: {
+    name: string | null;
+    tag: string | null;
+    rank: string | null;
+  } | null;
   stats: {
     Bedwars?: object;
     SkyWars?: object;

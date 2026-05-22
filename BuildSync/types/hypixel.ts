@@ -172,6 +172,25 @@ export interface HypixelAPIResponse {
   cause?: string;
 }
 
+export interface HypixelGuildMember {
+  uuid: string;
+  rank: string;
+  joined: number;
+}
+
+export interface HypixelGuild {
+  _id: string;
+  name: string;
+  tag?: string;
+  members: HypixelGuildMember[];
+}
+
+export interface HypixelGuildAPIResponse {
+  success: boolean;
+  guild: HypixelGuild | null;
+  cause?: string;
+}
+
 // ─────────────────────────────────────────────
 // Processed / UI-friendly types
 // ─────────────────────────────────────────────

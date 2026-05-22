@@ -72,6 +72,42 @@ export async function fetchHypixelPlayer(uuid: string): Promise<HypixelAPIRespon
   return data;
 }
 
+export async function fetchHypixelGuild(uuid: string): Promise<HypixelGuildAPIResponse> {
+  const apiKey = process.env.HYPIXEL_API_KEY;
+
+  if (!apiKey) {
+    throw new Error('Hypixel API key is not configured. Please set HYPIXEL_API_KEY in your .env.local file.');
+  }
+
+  const res = await fetch(
+    `${HYPIXEL_BASE}/guild?player=${uuid}&key=${apiKey}`,
+    {
+      next: { revalidate: 300 },
+    }
+  );
+
+  if (res.status === 429) {
+    const retryAfter = res.headers.get('RateLimit-Reset') ?? '60';
+    throw new Error(`Rate limited by Hypixel. Try again in ${retryAfter} seconds.`);
+  }
+
+  if (res.status === 403) {
+    throw new Error('Invalid Hypixel API key. Please check your configuration.');
+  }
+
+  if (!res.ok) {
+    throw new Error(`Hypixel API error: ${res.status} ${res.statusText}`);
+  }
+
+  const data: HypixelGuildAPIResponse = await res.json();
+
+  if (!data.success) {
+    throw new Error(data.cause ?? 'Unknown Hypixel API error');
+  }
+
+  return data;
+}
+
 /**
  * Check if Hypixel API is reachable (health check)
  */
