@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchUUID, fetchHypixelGuild, fetchHypixelPlayer } from '@/lib/hypixel';
 import { isValidUsername, getPlayerRank, getNetworkLevel } from '@/lib/utils';
+import type { HypixelGuildMember } from '@/types/hypixel';
 
 export async function GET(
   _req: NextRequest,
@@ -38,7 +39,7 @@ export async function GET(
     }
 
     const guild = guildResponse.guild;
-    const guildMember = guild?.members?.find(member => member.uuid === profile.id);
+    const guildMember = guild?.members?.find((member: HypixelGuildMember) => member.uuid === profile.id);
 
     // Step 3: Enrich data for the frontend
     const rankInfo = getPlayerRank(player);
