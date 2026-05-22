@@ -39,7 +39,11 @@ export async function GET(
     }
 
     const guild = guildResponse.guild;
-    const guildMember = guild?.members?.find((member: HypixelGuildMember) => member.uuid === profile.id);
+    // Normalize UUIDs when matching members: Hypixel or Mojang may include dashes/casing differences
+    const normalizedId = profile.id.replace(/-/g, '').toLowerCase();
+    const guildMember = guild?.members?.find((member: HypixelGuildMember) =>
+      member?.uuid?.replace(/-/g, '').toLowerCase() === normalizedId
+    );
 
     // Step 3: Enrich data for the frontend
     const rankInfo = getPlayerRank(player);
