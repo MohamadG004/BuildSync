@@ -2,7 +2,7 @@
 // Hypixel API Client
 // ─────────────────────────────────────────────
 
-import type { HypixelAPIResponse, MojangProfile } from '@/types/hypixel';
+import type { HypixelAPIResponse, HypixelGuildAPIResponse, MojangProfile } from '@/types/hypixel';
 
 const HYPIXEL_BASE = 'https://api.hypixel.net';
 const MOJANG_BASE = 'https://api.mojang.com';
