@@ -11,9 +11,6 @@ export const metadata: Metadata = {
   description:
     'Track and analyze Hypixel player statistics for BedWars, SkyWars, and more. Real-time stats, charts, and player tracking.',
   keywords: ['Hypixel', 'Minecraft', 'stats', 'BedWars', 'SkyWars', 'player tracker'],
-  icons: {
-    icon: '/favicon.png',
-  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
