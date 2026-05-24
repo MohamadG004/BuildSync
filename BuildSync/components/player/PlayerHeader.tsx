@@ -99,31 +99,46 @@ export function PlayerHeader({ player }: { player: PlayerData }) {
           )}
 
           <div className="flex flex-wrap items-baseline gap-2">
-            <h1
-              className="text-3xl font-bold tracking-tight sm:text-4xl"
-              style={{ color: player.rankColor }}
-            >
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
               {player.displayname}
             </h1>
-            {player.guild?.tag && (
-              <span
-                className="text-lg font-semibold"
-                style={{ color: getGuildTagColor(player.guild.tag) }}
-              >
-                [{player.guild.tag}]
-              </span>
-            )}
           </div>
 
           {player.guild?.name && (
-            <p className="mt-2 text-sm text-slate-600">
-              {player.guild.name}
-              {player.guild.rank && (
-                <span className="text-slate-500">
-                  {' '}· {player.guild.rank}
+            <div className="mt-2 flex flex-wrap items-baseline gap-2">
+              <span
+                className="font-semibold"
+                style={{
+                  color: getGuildTagColor(player.guild.tag || player.guild.name),
+                }}
+              >
+                {player.guild.name}
+              </span>
+
+              {player.guild.tag && (
+                <span
+                  className="font-semibold"
+                  style={{
+                    color: getGuildTagColor(player.guild.tag),
+                  }}
+                >
+                  [{player.guild.tag}]
                 </span>
               )}
-            </p>
+
+              {player.guild.rank && (
+                <span
+                  className="rounded-md px-2 py-0.5 text-xs font-bold tracking-wide"
+                  style={{
+                    color: '#FFB300',
+                    backgroundColor: '#FFB30012',
+                    border: '1px solid #FFB30025',
+                  }}
+                >
+                  · {player.guild.rank}
+                </span>
+              )}
+            </div>
           )}
 
           {/* Level bar */}
