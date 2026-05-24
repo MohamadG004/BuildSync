@@ -103,13 +103,17 @@ export function PlayerHeader({ player }: { player: PlayerData }) {
           </h1>
 
           {player.guild?.name && (
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-[#00AA00]">
               Guild{' '}
               <span className="font-semibold text-slate-900">
-                {player.guild.tag ? `[${player.guild.tag}] ` : ''}{player.guild.name}
+                {player.guild.tag ? `[${player.guild.tag}] ` : ''}
+                {player.guild.name}
               </span>
+
               {player.guild.rank ? (
-                <span className="text-slate-400"> · {player.guild.rank}</span>
+                <span className="text-slate-400">
+                  {' '}· {player.guild.rank}
+                </span>
               ) : null}
             </p>
           )}
