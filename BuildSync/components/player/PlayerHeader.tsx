@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, Share2 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { formatNumber, formatDate, timeAgo, getAvatarUrl, abbreviate } from '@/lib/utils';
+import { formatNumber, formatDate, timeAgo, getAvatarUrl, abbreviate, getGuildTagColor } from '@/lib/utils';
 import { MiniStat } from '@/components/ui/StatCard';
 
 interface PlayerData {
@@ -103,19 +103,33 @@ export function PlayerHeader({ player }: { player: PlayerData }) {
           </h1>
 
           {player.guild?.name && (
-            <p className="mt-2 text-sm text-[#00AA00]">
-              Guild{' '}
-              <span className="font-semibold text-slate-900">
+            <div className="mt-3 flex flex-wrap items-baseline gap-2">
+              <span className="text-sm font-medium text-[#00AA00]">
+                Guild
+              </span>
+              <span
+                className="font-semibold"
+                style={{
+                  color: getGuildTagColor(player.guild.tag || player.guild.name),
+                }}
+              >
                 {player.guild.tag ? `[${player.guild.tag}] ` : ''}
                 {player.guild.name}
               </span>
 
               {player.guild.rank ? (
-                <span className="text-slate-400">
-                  {' '}· {player.guild.rank}
+                <span
+                  className="rounded-md px-2 py-0.5 text-xs font-bold tracking-wide"
+                  style={{
+                    color: '#FFB300',
+                    backgroundColor: '#FFB30012',
+                    border: '1px solid #FFB30025',
+                  }}
+                >
+                  · {player.guild.rank}
                 </span>
               ) : null}
-            </p>
+            </div>
           )}
 
           {/* Level bar */}

@@ -253,3 +253,31 @@ export function getStatColor(value: number, thresholds: [number, number, number]
   if (value >= thresholds[0]) return '#f59e0b';
   return '#ef4444';
 }
+
+/** Generate a deterministic color from guild tag/name (hash-based) */
+export function getGuildTagColor(tag: string): string {
+  // Vibrant guild colors palette — chosen for good contrast and visual appeal
+  const colors = [
+    '#FF5555', // Red
+    '#FF8855', // Orange
+    '#FFBB55', // Gold
+    '#55FF55', // Green
+    '#55FFFF', // Cyan
+    '#5555FF', // Blue
+    '#FF55FF', // Magenta
+    '#FF6B9D', // Pink
+    '#FFD700', // Gold
+    '#00FFAA', // Turquoise
+  ];
+
+  // Simple hash function: convert tag to number
+  let hash = 0;
+  for (let i = 0; i < tag.length; i++) {
+    hash = ((hash << 5) - hash) + tag.charCodeAt(i);
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+
+  // Use absolute value and modulo to get array index
+  const index = Math.abs(hash) % colors.length;
+  return colors[index];
+}
