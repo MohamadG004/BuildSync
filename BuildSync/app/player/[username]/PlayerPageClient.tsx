@@ -139,7 +139,7 @@ export function PlayerPageClient({ username }: { username: string }) {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                'relative flex-shrink-0 rounded-lg px-4 py-2 text-sm font-medium transition-all',
+                'relative flex-shrink-0 rounded-lg px-4 py-2 text-sm font-medium transition-all cursor-pointer',
                 isActive
                   ? 'bg-white text-slate-900 shadow-sm'
                   : 'text-slate-500 hover:text-slate-700'
