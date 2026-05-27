@@ -72,6 +72,7 @@ export async function GET(
         ? {
             name: guild.name,
             tag: guild.tag ?? null,
+            tagColor: guild.tagColor ?? guild.tag_color ?? null,
             rank: guildMember?.rank ?? null,
           }
         : null,

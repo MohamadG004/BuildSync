@@ -182,6 +182,8 @@ export interface HypixelGuild {
   _id: string;
   name: string;
   tag?: string;
+  tagColor?: string;
+  tag_color?: string;
   members: HypixelGuildMember[];
 }
 

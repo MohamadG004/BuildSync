@@ -281,3 +281,33 @@ export function getGuildTagColor(tag: string): string {
   const index = Math.abs(hash) % colors.length;
   return colors[index];
 }
+
+export function parseHypixelGuildTagColor(color: string | null | undefined): string | undefined {
+  if (!color) return undefined;
+  const normalized = color.trim().toUpperCase();
+
+  const colorMap: Record<string, string> = {
+    BLACK: '#000000',
+    DARK_BLUE: '#0000AA',
+    DARK_GREEN: '#00AA00',
+    DARK_AQUA: '#00AAAA',
+    DARK_RED: '#AA0000',
+    DARK_PURPLE: '#AA00AA',
+    GOLD: '#FFAA00',
+    GRAY: '#AAAAAA',
+    DARK_GRAY: '#555555',
+    BLUE: '#5555FF',
+    GREEN: '#55FF55',
+    AQUA: '#55FFFF',
+    RED: '#FF5555',
+    LIGHT_PURPLE: '#FF55FF',
+    YELLOW: '#FFFF55',
+    WHITE: '#FFFFFF',
+  };
+
+  if (colorMap[normalized]) return colorMap[normalized];
+  if (/^#?[0-9A-F]{6}$/i.test(normalized)) {
+    return normalized.startsWith('#') ? normalized : `#${normalized}`;
+  }
+  return undefined;
+}

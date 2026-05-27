@@ -53,6 +53,7 @@ interface PlayerData {
   guild: {
     name: string | null;
     tag: string | null;
+    tagColor: string | null;
     rank: string | null;
   } | null;
   stats: {

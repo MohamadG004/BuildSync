@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, Share2 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { formatNumber, formatDate, timeAgo, getAvatarUrl, abbreviate, getGuildTagColor } from '@/lib/utils';
+import { formatNumber, formatDate, timeAgo, getAvatarUrl, abbreviate, getGuildTagColor, parseHypixelGuildTagColor } from '@/lib/utils';
 import { MiniStat } from '@/components/ui/StatCard';
 
 interface PlayerData {
@@ -23,6 +23,7 @@ interface PlayerData {
   guild: {
     name: string | null;
     tag: string | null;
+    tagColor: string | null;
     rank: string | null;
   } | null;
 }
@@ -106,25 +107,30 @@ export function PlayerHeader({ player }: { player: PlayerData }) {
 
           {player.guild?.name && (
             <div className="mt-2 flex flex-wrap items-baseline gap-2">
-              <span
-                className="font-semibold"
-                style={{
-                  color: getGuildTagColor(player.guild.tag || player.guild.name),
-                }}
-              >
-                {player.guild.name}
-              </span>
+              {(() => {
+                const guildColor =
+                  parseHypixelGuildTagColor(player.guild?.tagColor) ||
+                  getGuildTagColor(player.guild.tag || player.guild.name);
+                return (
+                  <>
+                    <span
+                      className="font-semibold"
+                      style={{ color: guildColor }}
+                    >
+                      {player.guild.name}
+                    </span>
 
-              {player.guild.tag && (
-                <span
-                  className="font-semibold"
-                  style={{
-                    color: getGuildTagColor(player.guild.tag),
-                  }}
-                >
-                  [{player.guild.tag}]
-                </span>
-              )}
+                    {player.guild.tag && (
+                      <span
+                        className="font-semibold"
+                        style={{ color: guildColor }}
+                      >
+                        [{player.guild.tag}]
+                      </span>
+                    )}
+                  </>
+                );
+              })()}
 
               {player.guild.rank && (
                 <span
