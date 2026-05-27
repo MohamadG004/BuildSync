@@ -136,9 +136,9 @@ export function PlayerHeader({ player }: { player: PlayerData }) {
                 <span
                   className="rounded-md px-2 py-0.5 text-xs font-bold tracking-wide"
                   style={{
-                    color: '#FFB300',
-                    backgroundColor: '#FFB30012',
-                    border: '1px solid #FFB30025',
+                    color: player.rankColor,
+                    backgroundColor: `${player.rankColor}12`,
+                    border: `1px solid ${player.rankColor}25`,
                   }}
                 >
                   · {player.guild.rank}
