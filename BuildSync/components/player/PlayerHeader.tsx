@@ -36,6 +36,10 @@ export function PlayerHeader({ player }: { player: PlayerData }) {
 
   const isNonRank = player.rank === 'NON';
 
+  const guildColor = player.guild?.name
+    ? parseHypixelGuildTagColor(player.guild.tagColor) || getGuildTagColor(player.guild.tag || player.guild.name)
+    : undefined;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -136,9 +140,9 @@ export function PlayerHeader({ player }: { player: PlayerData }) {
                 <span
                   className="rounded-md px-2 py-0.5 text-xs font-bold tracking-wide"
                   style={{
-                    color: player.rankColor,
-                    backgroundColor: `${player.rankColor}12`,
-                    border: `1px solid ${player.rankColor}25`,
+                    color: guildColor,
+                    backgroundColor: `${guildColor}12`,
+                    border: `1px solid ${guildColor}25`,
                   }}
                 >
                   · {player.guild.rank}
