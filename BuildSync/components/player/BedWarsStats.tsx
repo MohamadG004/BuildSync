@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { Sword, Skull, Bed, Trophy, Zap, Target, TrendingUp, Coins } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { StatCard } from '@/components/ui/StatCard';
@@ -62,7 +63,14 @@ export function BedWarsStatsComponent({ stats }: { stats: BedWarsStats }) {
       {/* Level badge */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-3">
         <div className="inline-flex items-center gap-2 rounded-xl border border-[var(--accent-border)] bg-[var(--accent-soft)] px-4 py-2">
-          <span className="font-mono text-sm font-bold text-[var(--accent)]">✦ {bwLevel}★ BedWars</span>
+          <Image 
+            src="/assets/icons/bed.jpg" 
+            alt="BedWars" 
+            width={16} 
+            height={16}
+            style={{ objectFit: 'contain' }}
+          />
+          <span className="font-mono text-sm font-bold text-[var(--accent)]">{bwLevel}★ BedWars</span>
         </div>
         <span className="text-sm text-slate-400">{formatNumber(coins)} tokens</span>
       </motion.div>
