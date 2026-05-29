@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { Sword, Skull, Bed, Trophy, Zap, Target, TrendingUp, Coins } from 'lucide-react';
+import { Sword, Skull, Bed, Trophy, Zap, Target, TrendingUp } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { StatCard } from '@/components/ui/StatCard';
 import { formatNumber, formatRatio, abbreviate, getBedwarsLevel, getStatColor } from '@/lib/utils';
@@ -31,7 +31,6 @@ export function BedWarsStatsComponent({ stats }: { stats: BedWarsStats }) {
   const bedsBroken  = stats.beds_broken_bedwars ?? 0;
   const bedsLost    = stats.beds_lost_bedwars ?? 0;
   const gamesPlayed = stats.games_played_bedwars ?? 0;
-  const coins       = stats.coins ?? 0;
 
   const fkdr = parseFloat(formatRatio(finalKills, finalDeaths));
   const wlr  = parseFloat(formatRatio(wins, losses));
@@ -54,7 +53,6 @@ export function BedWarsStatsComponent({ stats }: { stats: BedWarsStats }) {
     { label: 'Final Kills',       value: abbreviate(finalKills),                subValue: formatNumber(finalKills),                                             icon: Skull,     iconColor: 'var(--purple)' },
     { label: 'Wins',              value: abbreviate(wins),                      subValue: `${formatNumber(gamesPlayed)} games played`,                          icon: Trophy,    iconColor: 'var(--amber)' },
     { label: 'Win Streak',        value: formatNumber(stats.winstreak ?? 0),    icon: TrendingUp, iconColor: 'var(--accent)' },
-    { label: 'Coins',             value: abbreviate(coins),                    subValue: `${formatNumber(coins)} total`,                       icon: Coins,     iconColor: 'var(--amber)' },
     { label: 'Beds Broken',       value: abbreviate(bedsBroken),                icon: Target,    iconColor: '#f472b6' },
   ];
 
@@ -72,7 +70,7 @@ export function BedWarsStatsComponent({ stats }: { stats: BedWarsStats }) {
           />
           <span className="font-mono text-sm font-bold text-[var(--accent)]">{bwLevel}★ BedWars</span>
         </div>
-        <span className="text-sm text-slate-400">{formatNumber(coins)} tokens</span>
+        <span className="text-sm text-slate-400">{formatNumber(stats.coins ?? 0)} tokens</span>
       </motion.div>
 
       {/* Stat cards */}
