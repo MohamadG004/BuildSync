@@ -147,7 +147,7 @@ export function OverallStats({ stats, level, karma, achievementPoints }: Overall
         transition={{ delay: 0.45 }}
         className="rounded-2xl border border-[var(--border)] bg-white p-6"
       >
-        <SectionHeader title="Game Summary" />
+        <SectionHeader title="Most Played" />
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
