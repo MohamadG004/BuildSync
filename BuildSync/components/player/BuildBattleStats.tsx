@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Trophy, Star, ThumbsUp, Coins, Gamepad2, Target } from 'lucide-react';
 import { StatCard } from '@/components/ui/StatCard';
@@ -61,12 +62,18 @@ export function BuildBattleStatsComponent({ stats }: { stats: BuildBattleStats }
 
   return (
     <div className="space-y-5">
-      {/* Score badge */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-3">
         <div className="inline-flex items-center gap-2 rounded-xl border px-4 py-2"
           style={{ borderColor: 'rgba(180,83,9,0.2)', background: 'rgba(180,83,9,0.07)' }}>
+            <Image 
+                        src="/assets/icons/crafting.png" 
+                        alt="Build Battle" 
+                        width={16} 
+                        height={16}
+                        style={{ objectFit: 'contain' }}
+                      />
           <span className="font-mono text-sm font-bold" style={{ color: 'var(--amber)' }}>
-            🏗 {title} · {formatNumber(score)} Score · Build Battle
+            {title} · {formatNumber(score)} Score · Build Battle
           </span>
         </div>
         <span className="text-sm text-slate-400">{formatNumber(coins)} coins</span>
