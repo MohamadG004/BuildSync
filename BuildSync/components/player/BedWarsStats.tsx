@@ -62,7 +62,7 @@ export function BedWarsStatsComponent({ stats }: { stats: BedWarsStats }) {
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-3">
         <div className="inline-flex items-center gap-2 rounded-xl border border-[var(--accent-border)] bg-[var(--accent-soft)] px-4 py-2">
           <Image 
-            src="/assets/icons/bed.jpg" 
+            src="/assets/icons/bed.png" 
             alt="BedWars" 
             width={16} 
             height={16}
